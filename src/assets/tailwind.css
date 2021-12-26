@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        @apply font-sans;
+    }
+    body {
+        @apply bg-gray-100 dark:bg-gray-800;
+        @apply text-gray-800 dark:text-gray-100;
+        @apply text-center;
+    }
+}
+
+@layer components {
+    .btn {
+        background-color: theme('colors.gray.900');
+        border-radius: theme('borderRadius.full');
+        font-size: theme('fontSize.lg');
+        padding: theme('padding.3');
+        display: block;
+        margin: 1.2rem auto;
+        cursor: pointer;
+    }
+    .nofill {
+        fill: none !important;
+        stroke: none !important;
+    }
+    .remaining_path {
+        stroke-width: 8px;
+        stroke-linecap: round;
+        transform: rotate(90deg);
+        transform-origin: center;
+        transition: 1s linear all;
+        fill-rule: nonzero;
+    }
+}
