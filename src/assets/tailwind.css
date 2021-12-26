@@ -17,10 +17,15 @@
     .btn {
         background-color: theme('colors.gray.900');
         border-radius: theme('borderRadius.full');
+        font-size: theme('fontSize.lg');
+        padding: theme('padding.3');
+        display: block;
+        margin: 1.2rem auto;
+        cursor: pointer;
     }
     .nofill {
-        fill: none;
-        stroke: none;
+        fill: none !important;
+        stroke: none !important;
     }
     .remaining_path {
         stroke-width: 8px;
