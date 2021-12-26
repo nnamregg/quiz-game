@@ -1,10 +1,10 @@
 <template>
-    <div class="container mx-auto max-w-2xl h-screen p-5 flex">
-        <div class="h-4/6 my-auto w-full bg-white dark:bg-gray-800 shadow-wrapper-shadow">
+    <div class="container mx-auto max-w-2xl lg:max-w-4xl min-h-screen md:h-screen p-5 flex">
+        <div class="md:h-3/5 my-16 md:my-auto w-full bg-white dark:bg-gray-800 rounded-xl shadow-wrapper-shadow relative">
             <template v-if="!triviaLength">
                 <QuizSelection />
             </template>
-            <template v-if="(index < triviaLength)">
+            <template v-if="(question)">
                 <Question />
             </template>
             <template v-if="(index >= triviaLength && triviaLength != 0)">
@@ -40,13 +40,18 @@ export default {
             return store.getters.triviaLength
         })
 
+        const question = computed(() => {
+            return store.getters.currentQuestion
+        })
+
         onMounted(() => {
             store.dispatch('getCategories')
         })
 
         return {
             index,
-            triviaLength
+            triviaLength,
+            question
         }
     }
 }

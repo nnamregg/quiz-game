@@ -4,7 +4,6 @@ export default createStore({
     state: {
         categories: [],
         options: {
-            loading: false,
             questions_amount: 10,
             quiz_category: 0,
             quiz_difficulty: ''            
@@ -12,8 +11,11 @@ export default createStore({
         triviaQuestions: [],
         index: 0,
         score: 0,
-        timeLimit: 10,
-        timePassed: 0
+        timer: {
+            time_limit: 10,
+            time_passed: 0,
+            counter_on: false
+        }
     },
     mutations: {
         SET_CATEGORIES(state, payload) {
@@ -43,13 +45,16 @@ export default createStore({
             state.options.questions_amount = 10,
             state.options.quiz_category = 0,
             state.options.quiz_difficulty = '',
-            state.timePassed = 0
+            state.timer.time_passed = 0
+        },
+        COUNTER_CONTROL(state, payload) {
+            state.timer.counter_on = payload
         },
         COUNTDOWN(state) {
-            state.timePassed++
+            state.timer.time_passed++
         },
         COUNTDOWN_RESET(state) {
-            state.timePassed = -1
+            state.timer.time_passed = 0
         },
         TIMES_OUT(state) {
             state.index = 100
@@ -82,7 +87,7 @@ export default createStore({
                 const data = await response.json()
                 commit('SET_CATEGORIES', data.trivia_categories)
             } catch(error) {
-                console.log('error getCategories: ' + error)
+                console.log(error)
             }
         }
     },
@@ -91,7 +96,10 @@ export default createStore({
             return state.triviaQuestions.length
         },
         timeLeft: state => {
-            return state.timeLimit - state.timePassed
+            return state.timer.time_limit - state.timer.time_passed
+        },
+        currentQuestion: state => {
+            return state.triviaQuestions[state.index]
         }
     }
 })

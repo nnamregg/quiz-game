@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-10 h-10 mt-2">
+    <div class="relative w-10 h-10 lg:w-12 lg:h-12">
     <svg class="-scale-x-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <g class="nofill">
             <circle class="stroke-gray-600 stroke-[8px]" cx="50" cy="50" r="46.5"/>
@@ -16,7 +16,7 @@
             ></path>
         </g>
     </svg>
-    <span class="absolute w-10 h-10 top-0 flex items-center justify-center text-xl">
+    <span class="absolute w-10 h-10 lg:w-12 lg:h-12 top-0 flex items-center justify-center text-xl lg:text-2xl">
         {{ timeLeft }}
     </span>
   </div>
@@ -30,12 +30,8 @@ export default {
     setup() {
         const store = useStore()
 
-        const index = computed(() => {
-            return store.state.index
-        })
-
-        const triviaLength = computed(() => {
-            return store.getters.triviaLength
+        const counterOn = computed(() => {
+            return store.state.timer.counter_on
         })
 
         const timeLeft = computed(() => {
@@ -83,19 +79,21 @@ export default {
         }
 
         onMounted(() => {
-            startTimer()
+            store.commit('COUNTER_CONTROL', true)
         })
 
         watch(timeLeft, (newVal) => {
             if (newVal == 0) {
-                clearInterval(timerInterval)
                 store.commit('TIMES_OUT')
+                store.commit('COUNTER_CONTROL', false)
             }
         })
-        
-        watch(index, (newVal) => {
-            if (newVal == triviaLength.value) {
+
+        watch(counterOn, (newVal) => {
+            if (newVal == false) {
                 clearInterval(timerInterval)
+            } else {
+                startTimer()
             }
         })
 

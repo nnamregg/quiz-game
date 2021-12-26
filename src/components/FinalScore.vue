@@ -1,26 +1,25 @@
 <template>
-    <div class="h-full flex flex-col justify-around overflow-hidden">
+    <div class="h-full flex flex-col justify-between py-10 overflow-hidden">
         <template v-if="(index == triviaLength)">
             <div class="mx-auto anim-top">
-                <span class="text-xs block">SCORE:</span>
-                <br>
-                <span class="bg-gray-100 text-gray-800 text-2xl font-semibold mx-auto px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ score }} / {{ triviaLength }}</span>
+                <span class="text-xs block mb-2">SCORE:</span>
+                <span class="block bg-gray-100 text-gray-800 text-xl md:text-2xl font-semibold mx-auto px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-100">{{ score }} / {{ triviaLength }}</span>
             </div>
-            <div class="text-5xl anim-center">
+            <div class="text-5xl lg:text-7xl max-w-md mx-auto anim-center">
                 <p>{{ finalScore }}</p>
             </div>
         </template>
         <template v-else-if="(index == 100)">
-                <h1 class="text-5xl anim-center">Time´s Out</h1>
-                <span class="material-icons text-7xl anim-top">
+                <h1 class="text-5xl lg:text-7xl anim-center">Time´s Out</h1>
+                <span class="material-icons text-9xl anim-top">
                     hourglass_disabled
                 </span>
         </template>
         
         <div>
-            <button class="btn block py-2 w-1/2 mx-auto mb-2 focus:dark:bg-teal-400 focus:text-gray-800 focus:scale-105 focus:ring-2 focus:ring-teal-600 leading-5 cursor-pointer transition transform opacity-0" @click="resetQuiz">Restart</button>
-            <br>
-            <button class="btn block py-2 w-1/2 mx-auto mb-2 focus:dark:bg-teal-400 focus:text-gray-800 focus:scale-105 focus:ring-2 focus:ring-teal-600 leading-5 cursor-pointer transition transform opacity-0" @click="newQuiz">Change Quiz</button>
+            <button class="btn lg:inline-block lg:mx-4 w-5/6 lg:w-1/3 leading-5 md:w-1/2 focus:dark:bg-teal-400 focus:text-gray-800 focus:scale-105 focus:ring-2 focus:ring-teal-600 transition transform opacity-0" @click="resetQuiz">Restart</button>
+            <!-- <br> -->
+            <button class="btn lg:inline-block py-3 w-5/6 lg:w-1/3 text-lg leading-5 md:w-1/2 focus:dark:bg-teal-400 focus:text-gray-800 focus:scale-105 focus:ring-2 focus:ring-teal-600 transition transform opacity-0" @click="newQuiz">Change Quiz</button>
         </div>
     </div>
 </template>
