@@ -1,10 +1,7 @@
-.gitignore
 .DS_Store
 node_modules
 /dist
 /public/img
-/tailwind.config.js
-
 
 # local env files
 .env.local
