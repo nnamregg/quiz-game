@@ -17,95 +17,78 @@
         </g>
     </svg>
     <span class="absolute w-10 h-10 lg:w-12 lg:h-12 top-0 flex items-center justify-center text-xl lg:text-2xl">
-        {{ timeLeft }}
+        {{ store.timeLeft }}
     </span>
   </div>
 </template>
 
-<script>
-import { computed, onMounted, watch } from '@vue/runtime-core'
-import { useStore } from 'vuex'
+<script setup>
+import { watch, computed, onMounted } from '@vue/runtime-core'
+import { useStore } from '@/stores/main'
 
-export default {
-    setup() {
-        const store = useStore()
+const store = useStore()
+const counterOn = computed(() => store.timer.counterOn)
+const timeLeft = computed(() => store.timeLeft)
 
-        const counterOn = computed(() => {
-            return store.state.timer.counter_on
-        })
+const timeFraction = computed(() => {
+    const rawTimeFraction = store.timeLeft / 10;
+    return rawTimeFraction - (1 / 10) * (1 - rawTimeFraction);
+})
 
-        const timeLeft = computed(() => {
-            return store.getters.timeLeft
-        })
+const circleDasharray = computed(() => {
+    return `${(timeFraction.value * 283).toFixed(0)} 283`
+})
 
-        const timeFraction = computed(() => {
-            const rawTimeFraction = timeLeft.value / 10;
-            return rawTimeFraction - (1 / 10) * (1 - rawTimeFraction);
-        })
-
-        const circleDasharray = computed(() => {
-            return `${(timeFraction.value * 283).toFixed(0)} 283`
-        })
-
-        const color_codes = {
-            info: {
-                color: 'stroke-teal-500'
-            },
-            warning: {
-                color: 'stroke-orange-500',
-                threshold: 5
-            },
-            alert : {
-                color: 'stroke-red-500',
-                threshold: 3
-            }
-        }
-
-        const remainingPathColor = computed(() => {
-            const { alert, warning, info } = color_codes;
-
-            if (timeLeft.value <= alert.threshold) {
-                return alert.color;
-            } else if (timeLeft.value <= warning.threshold) {
-                return warning.color;
-            } else {
-                return info.color;
-            }
-        })
-
-        let timerInterval
-        const startTimer = () => {
-            timerInterval = setInterval(() => (store.commit('COUNTDOWN')), 1000)
-        }
-
-        onMounted(() => {
-            store.commit('COUNTER_CONTROL', true)
-        })
-
-        watch(timeLeft, (newVal) => {
-            if (newVal == 0) {
-                store.commit('TIMES_OUT')
-                store.commit('COUNTER_CONTROL', false)
-            }
-        })
-
-        watch(counterOn, (newVal) => {
-            if (newVal == false) {
-                clearInterval(timerInterval)
-            } else {
-                startTimer()
-            }
-        })
-
-        return {
-            timeLeft,
-            circleDasharray,
-            remainingPathColor
-        }
+const colors = {
+    info: {
+        color: 'stroke-teal-500'
+    },
+    warning: {
+        color: 'stroke-orange-500',
+        threshold: 5
+    },
+    alert : {
+        color: 'stroke-red-500',
+        threshold: 3
     }
 }
+
+const remainingPathColor = computed(() => {
+    const { alert, warning, info } = colors;
+
+    if (timeLeft <= alert.threshold) {
+        return alert.color;
+    } else if (store.timeLeft <= warning.threshold) {
+        return warning.color;
+    } else {
+        return info.color;
+    }
+})
+
+let timerInterval
+const startTimer = () => {
+    timerInterval = setInterval(() => (store.timer.timePassed++), 1000)
+}
+
+onMounted(() => {
+    store.timer.counterOn = true
+})
+
+watch(timeLeft, (newVal) => {
+    console.log('timeLeft watcher -> ', newVal)
+    if (newVal === 0) {
+        store.index = 100,
+        store.timer.counterOn = false
+        clearInterval(timerInterval)
+    }
+})
+
+watch(counterOn, (newVal) => {
+    if (newVal === false) {
+        clearInterval(timerInterval)
+    } else {
+        startTimer()
+    }
+}) 
+
 </script>
-
-<style>
-
-</style>

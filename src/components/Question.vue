@@ -31,130 +31,102 @@
 
 </template>
 
-<script>
-
+<script setup>
 import { computed, onMounted, onUpdated } from 'vue'
-import { useStore } from 'vuex'
+import { useStore } from '@/stores/main'
 import Timer from '@/components/Timer.vue'
 
-export default {
-    components: {
-        Timer
-    },
-    setup() {
-        const store = useStore()
 
-        const index = computed(() => {
-            return store.state.index
-        })
+const store = useStore()
 
-        const triviaLength = computed(() => {
-            return store.getters.triviaLength
-        })
+const percentage = computed(() => {
+    return ((store.index+1)/store.quizLength) * 100
+})
 
-        const percentage = computed(() => {
-            return ((index.value+1)/triviaLength.value) * 100
-        })
+const question = computed(() => store.currentQuestion )
 
-        const question = computed(() => {
-            return store.getters.currentQuestion
-        })
+const answer = computed(() => {
+    return question.value.correct_answer
+})
 
-        const answer = computed(() => {
-            return question.value.correct_answer
-        })
+// Mezcla opciones de respuestas
+const getRandomInt = max => {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
-        // Mezcla opciones de respuestas
-        const getRandomInt = max => {
-            return Math.floor(Math.random() * Math.floor(max));
-        }
+const options = computed(() => {
+    let answers = [...question.value.incorrect_answers]
+    answers.splice(getRandomInt(4), 0, answer.value)
+    return answers
+})
 
-        const options = computed(() => {
-            let answers = [...question.value.incorrect_answers]
-            answers.splice(getRandomInt(4), 0, answer.value)
-            return answers
-        })
+// Decodifica Unicode y caracteres especiales de la respuesta de la API
+const decodeHTML = (str) => {
+    let txt = document.createElement("textarea")
+    txt.innerHTML = str
+    return txt.value
+}
 
-        // Decodifica Unicode y caracteres especiales de la API
-        const decodeHTML = (str) => {
-            let txt = document.createElement("textarea")
-            txt.innerHTML = str
-            return txt.value
-        }
+// Selección de respuesta, manipulación de estilos y commits de mutations
+const handleOption = (event) => {
+    let el = event.target
+    el.classList.add('scale-105')
+    
+    let val = el.innerText
+    let encodedAnswer = decodeHTML(answer.value)
 
-        // Selección de respuesta, manipulación de estilos y commits de mutations
-        const handleOption = (event) => {
-            let el = event.target
-            el.classList.add('scale-105')
-            
-            let val = el.innerText
-            let encodedAnswer = decodeHTML(answer.value)
+    el.classList.remove('dark:bg-gray-700', 'hover:bg-gray-600')
 
-            el.classList.remove('dark:bg-gray-700', 'hover:bg-gray-600')
+    if (val == encodedAnswer) {
+        el.classList.add('bg-green-500')
+        store.score += 1
+    } else {
+        el.classList.add('bg-red-500')
+    }
 
-            if (val == encodedAnswer) {
-                el.classList.add('bg-green-500')
-                store.commit('SCORE_POINT')
-            } else {
-                el.classList.add('bg-red-500')
-            }
+    if (store.index < store.quizLength) {
+        store.timer.counterOn = false
+        
+        progressBar()
+        animOut()
 
-            if (index.value < triviaLength.value) {
-                store.commit('COUNTER_CONTROL', false)
-                
-                progressBar()
-                animOut()
-
-                setTimeout(() => {
-                    el.classList.remove('scale-105', 'bg-green-500', 'bg-red-500')
-                    el.classList.add('dark:bg-gray-700', 'hover:bg-gray-600')
-                    store.commit('NEXT_QUESTION')
-                    }, 1000)
-            } else {
-                return
-            }
-        }
-
-        // Actualizar valor para barra de progreso
-        const progressBar = () => {
-            let progress = document.getElementById('progress-bar')
-            progress.style.width = percentage.value + '%'
-        }
-
-        const animOut = () => {
-            gsap.to("#questionAnim", {opacity: 0, delay: 0.8, duration: 0.2, ease: 'expo.out'})
-        }
-
-        const animIn = () => {
-            gsap.fromTo("#questionAnim",{opacity:0}, {opacity: 1, delay: 0.3, duration: 0.2, ease: 'expo.in'})
-        }
-
-        const title = () => {
-            document.title = `Question ${index.value + 1} / ${triviaLength.value}`
-        }
-
-        onMounted(() => {
-            title()
-        })
-
-        onUpdated(() => {
-            title()
-            animIn()
-            store.commit('COUNTDOWN_RESET')
-            setTimeout(() => (store.commit('COUNTER_CONTROL', true)), 500)
-        })
-
-        return {
-            question,
-            options,
-            answer,
-            decodeHTML,
-            handleOption
-        }
+        setTimeout(() => {
+            el.classList.remove('scale-105', 'bg-green-500', 'bg-red-500')
+            el.classList.add('dark:bg-gray-700', 'hover:bg-gray-600')
+            store.index += 1
+            }, 1000)
+    } else {
+        return
     }
 }
+
+// Actualizar valor para barra de progreso
+const progressBar = () => {
+    let progress = document.getElementById('progress-bar')
+    progress.style.width = percentage.value + '%'
+}
+
+const animOut = () => {
+    gsap.to("#questionAnim", {opacity: 0, delay: 0.8, duration: 0.2, ease: 'expo.out'})
+}
+
+const animIn = () => {
+    gsap.fromTo("#questionAnim",{opacity:0}, {opacity: 1, delay: 0.3, duration: 0.2, ease: 'expo.in'})
+}
+
+const title = () => {
+    document.title = `Question ${store.index + 1} / ${store.quizLength}`
+}
+
+onMounted(() => {
+    title()
+})
+
+onUpdated(() => {
+    title()
+    animIn()
+    store.timer.timePassed = 0
+    setTimeout(() => ( store.timer.counterOn = true ), 500)
+})
+
 </script>
-
-<style>
-
-</style>
