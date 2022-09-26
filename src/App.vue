@@ -1,7 +1,4 @@
 <template>
-    <div id="dark-mode-selector">
-        <DarkModeSelector />
-    </div>
     <div class="container mx-auto max-w-2xl lg:max-w-4xl min-h-screen md:h-screen p-5 flex">
         <div class="md:h-3/5 my-16 md:my-auto w-full bg-neutral-100 dark:bg-neutral-900 rounded-b-lg shadow-md relative hover:shadow-lg overflow-hidden">
             <QuizSelection v-if="store.quizLength === 0" />
@@ -9,7 +6,9 @@
             <Question v-else-if="(store.currentQuestion)" />
             
             <FinalScore v-if="(store.index >= store.quizLength && store.quizLength != 0)" />
+            
         </div>
+        <DarkModeSelector />
     </div>
 </template>
 

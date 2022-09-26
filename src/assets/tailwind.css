@@ -20,7 +20,7 @@
         stroke: none !important;
     }
     .remaining_path {
-        stroke-width: 8px;
+        stroke-width: 8.5px;
         stroke-linecap: round;
         transform: rotate(90deg);
         transform-origin: center;

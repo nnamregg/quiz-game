@@ -2,7 +2,7 @@
     <div class="relative w-10 h-10 lg:w-12 lg:h-12">
     <svg class="-scale-x-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <g class="nofill">
-            <circle class="stroke-gray-600 stroke-[8px]" cx="50" cy="50" r="46.5"/>
+            <circle class="stroke-neutral-500 stroke-[7px] dark:stroke-neutral-700 dark:stroke-[8px]" cx="50" cy="50" r="46.5"/>
             <path
             :stroke-dasharray="circleDasharray"
             class="remaining_path"
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { watch, computed, onMounted } from '@vue/runtime-core'
+import { ref, watch, computed, onMounted } from '@vue/runtime-core'
 import { useStore } from '@/stores/main'
 
 const store = useStore()
@@ -35,9 +35,7 @@ const timeFraction = computed(() => {
     return rawTimeFraction - (1 / 10) * (1 - rawTimeFraction);
 })
 
-const circleDasharray = computed(() => {
-    return `${(timeFraction.value * 283).toFixed(0)} 283`
-})
+const circleDasharray = computed(() => `${(timeFraction.value * 283).toFixed(0)} 283`)
 
 const colors = {
     info: {
@@ -65,35 +63,32 @@ const remainingPathColor = computed(() => {
     }
 })
 
-let timerInterval
+const timerInterval = ref(null)
 const startTimer = () => {
-    timerInterval = setInterval(() => (store.timer.timePassed++), 1000)
+    clearInterval(timerInterval.value)
+    timerInterval.value = setInterval(() => (store.timer.timePassed++), 1000)
 }
 
 onMounted(() => {
     store.timer.counterOn = true
-    clearInterval(timerInterval)
 })
 
 watch(timeLeft, (newVal) => {
-    // console.log('timeLeft -> ', newVal)
-    // console.log(timerInterval)
-
     if (newVal === 0) {
-        clearInterval(timerInterval)
-        store.index = 100,
+        clearInterval(timerInterval.value)
         store.timer.counterOn = false
-        
+        console.log('counterOn en watcher de timeLeft -> ', counterOn)
+        console.log('interval cleared ? -> ', timerInterval.value)
+        store.index = 100
     }
 })
 
 watch(counterOn, (newVal) => {
-    // console.log('counterOn -> ', newVal)
-    // console.log(timerInterval)
-    if (newVal === false) {
-        clearInterval(timerInterval)
-    } else {
+    console.log('newVal de counterOn -> ', newVal)
+    if (newVal === true) {
         startTimer()
+    } else {
+        clearInterval(timerInterval.value)
     }
 }) 
 

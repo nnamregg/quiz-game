@@ -4,11 +4,12 @@
 
         <template v-if="(store.index == store.quizLength)">
             <div class="mx-auto mt-4 anim-top">
-                <span class="mdi mdi-scoreboard mdi-24px text-pink-400 dark:º"></span>
+                <span class="mdi mdi-scoreboard mdi-24px text-pink-400 dark:text-pink-500"></span>
                 <span class="block text-xl md:text-2xl font-semibold mx-auto px-2.5 py-0.5 rounded">{{ store.score }} / {{ store.quizLength }}</span>
             </div>
-            <div class="anim-center text-5xl lg:text-7xl max-w-md mx-auto mt-16">
-                <p>{{ finalScore }}</p>
+            <div class="anim-center max-w-md mx-auto mt-16">
+                <span class="mdi mdi-36px" :class="finalScore.ico"></span>
+                <p class="text-2xl lg:text-5xl ">{{ finalScore.text }}</p>
             </div>
         </template>
 
@@ -37,16 +38,45 @@ const btnClasses = 'uppercase flex justify-center items-center h-14 md:h-20 text
 
 const finalScore = computed(() => {
     const avg = (store.score / store.quizLength) * 100
-    if (avg < 40) {
-        return 'That was really bad'
-    } else if (avg >= 40 && avg <= 70) {
-        return 'That was not so bad'
-    } else if (avg > 70 && avg < 100) {
-        return 'Nice'
-    } else {
-        return 'PERFECT!'
-    }
+    return getFinalScore(avg)
 })
+
+const scores = {
+    terrible: {
+        threshold: 40,
+        text: 'That was really bad',
+        ico: 'mdi-death-star-variant'
+    },
+    low: {
+        threshold: 70,
+        text: 'That was not so bad',
+        ico: 'mdi-death-star'
+    },
+    nice: {
+        threshold: 99,
+        text: 'Nice',
+        ico: 'mdi-candy'
+    },
+    perfect: {
+        threshold: 100,
+        text: 'Perfect!',
+        ico: 'mdi-unicorn-variant'
+    }
+}
+
+function getFinalScore(avg){
+    const { terrible, low, nice, perfect } = scores
+
+    if (avg < terrible.threshold) {
+        return terrible
+    } else if (avg <= low.threshold) {
+        return low
+    } else if (avg <= nice.threshold) {
+        return nice
+    } else {
+        return perfect
+    }
+}
 
 const resetQuiz = () => {
     setTimeout(() => { 
@@ -90,7 +120,7 @@ const title = () => {
     if (store.index == 100) {
         document.title = 'You´re out of time'
     } else {
-        document.title = finalScore.value
+        document.title = finalScore.value.text
     }
 }
 

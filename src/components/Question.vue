@@ -19,7 +19,7 @@
                 <h2 class="text-left text-4xl lg:text-5xl my-10">{{ decodeHTML(question.question) }}</h2>
         </div>
 
-        <div class="grid grid-cols-1 my-0 w-full md:grid-cols-2 absolute bottom-0">
+        <div id="answersAnim" class="grid grid-cols-1 my-0 w-full md:grid-cols-2 absolute bottom-0">
             <div :class="answerClasses" 
             v-for="(option, index) in options" :key="index"
             @click="handleAnswer"
@@ -81,11 +81,15 @@ const decodeHTML = (str) => {
 
 // Selección de respuesta, manipulación de estilos y animaciones
 const handleAnswer = (e) => {
+    store.timer.counterOn = false
 
     let el = e.target
     
     let val = el.innerText
     let decodedAnswer = decodeHTML(answer.value)
+    
+    console.log('val -> ', val)
+    console.log('decodedAnswer -> ', decodedAnswer)
 
     el.classList.remove('hover:bg-pink-400', 'dark:hover:bg-pink-500')
 
@@ -97,7 +101,7 @@ const handleAnswer = (e) => {
     }
 
     if (store.index < store.quizLength) {
-        store.timer.counterOn = false
+        // store.timer.counterOn = false
         
         progressBar()
         animOut()
@@ -119,11 +123,13 @@ const progressBar = () => {
 }
 
 const animOut = () => {
-    gsap.to("#questionAnim", {opacity: 0, delay: 0.8, duration: 0.2, ease: 'expo.out'})
+    gsap.to("#questionAnim", {opacity: 0, delay: 0.7, duration: 0.3, ease: 'expo.out'})
+    gsap.to("#answersAnim", {opacity: 0, y: 250, delay: 0.7, duration: 0.3, ease: 'expo.out'})
 }
 
 const animIn = () => {
     gsap.fromTo("#questionAnim",{opacity:0}, {opacity: 1, delay: 0.3, duration: 0.2, ease: 'expo.in'})
+    gsap.fromTo("#answersAnim", {opacity:0, y: 250}, {opacity:1, y: 0, delay: 0.3, duration: 0.5, ease: 'expo.in'})
 }
 
 const title = () => {
