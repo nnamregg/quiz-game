@@ -72,18 +72,24 @@ const startTimer = () => {
 
 onMounted(() => {
     store.timer.counterOn = true
+    clearInterval(timerInterval)
 })
 
 watch(timeLeft, (newVal) => {
-    console.log('timeLeft watcher -> ', newVal)
+    // console.log('timeLeft -> ', newVal)
+    // console.log(timerInterval)
+
     if (newVal === 0) {
+        clearInterval(timerInterval)
         store.index = 100,
         store.timer.counterOn = false
-        clearInterval(timerInterval)
+        
     }
 })
 
 watch(counterOn, (newVal) => {
+    // console.log('counterOn -> ', newVal)
+    // console.log(timerInterval)
     if (newVal === false) {
         clearInterval(timerInterval)
     } else {
