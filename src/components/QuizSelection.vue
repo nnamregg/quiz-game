@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-xl mx-auto pt-6 h-full flex flex-col justify-evenly overflow-hidden">
+    <div class="max-w-xl mx-auto pt-6 h-full flex flex-col justify-evenly">
         <div class="my-2">
             <span class="mdi mdi-18px mdi-fruit-grapes mr-2 text-pink-400 dark:text-pink-500"></span>
             <label for="amount" :class="labelClasses">How many questions?</label>
@@ -53,7 +53,7 @@ import { useStore } from '@/stores/main'
 const store = useStore()
 
 const labelClasses = 'block mb-2 text-sm lg:text-base font-semibold italic text-neutral-800 dark:text-neutral-200 inline'
-const inputClasses = 'block border-0 border-b-2 text-lg mx-auto w-2/3 md:w-1/2 p-2 md:p-2.5 bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-300 focus:shadow-lg focus:border-pink-500 focus:text-pink-500 focus:ring-0'
+const inputClasses = 'block border-0 border-b-2 text-sm md:text-lg mx-auto w-2/3 md:w-1/2 p-2 md:p-2.5 bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-300 focus:shadow-lg focus:border-pink-500 focus:text-pink-500 focus:ring-0'
 
 // Seteo de opciones para el fetch
 const setAmount = ((e) => {

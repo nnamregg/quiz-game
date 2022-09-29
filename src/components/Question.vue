@@ -1,16 +1,15 @@
 <template>
 
-    <div class="h-full">
+    <div class="h-auto">
         <div class="w-full bg-pink-100 h-2 dark:bg-neutral-800 absolute">
             <div id="progress-bar" class="bg-pink-400 text-xs text-center p-0.5 leading-none w-0 h-2 dark:bg-teal-500 transition-all duration-500"></div>
         </div>
     
-        <div id="questionAnim" class="w-full mx-auto h-auto pt-20 pb-4 px-6 relative">
+        <div id="questionAnim" class="w-full mx-auto mb-72 md:mb-0 h-auto pt-20 pb-4 px-6 relative">
             <div class="absolute mx-auto top-8 flex justify-between w-[90%] lg:w-[95%]">
                 <div class="text">
                     <span class="mdi mr-2" :class="difficultyIcon"></span>
                     <small class="my-1.5 text-xs leading-none lg:text-sm">{{ question.category }}</small>
-                    <!-- <small class="block my-1.5 text-xs leading-none lg:text-sm">{{ question.difficulty.toUpperCase() }}</small> -->
                 </div>
                 <div class="text-right">
                     <Timer />
@@ -21,10 +20,10 @@
 
         <div id="answersAnim" class="grid grid-cols-1 my-0 w-full md:grid-cols-2 absolute bottom-0">
             <div :class="answerClasses" 
-            v-for="(option, index) in options" :key="index"
+            v-for="(answer, index) in answers" :key="index"
             @click="handleAnswer"
             >
-                {{ decodeHTML(option) }}
+                {{ decodeHTML(answer) }}
             </div>
         </div>
     </div>
@@ -56,7 +55,7 @@ function setDifficultyIcon(difficulty) {
     return icons[difficulty]
 }
 
-const answerClasses = 'flex justify-center items-center h-14 md:h-20 text-sm lg:text-base font-semibold px-1 py-auto cursor-pointer transition transform duration-75 bg-neutral-200 hover:italic hover:bg-pink-400 hover:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-pink-500'
+const answerClasses = 'flex justify-center items-center h-16 md:h-20 text-sm lg:text-base font-semibold px-1 py-auto cursor-pointer transition transform duration-75 bg-neutral-200 md:hover:italic md:hover:bg-pink-400 md:hover:text-neutral-100 dark:bg-neutral-900 md:dark:hover:bg-pink-500'
 
 const question = computed(() => store.currentQuestion )
 const answer = computed(() => store.currentQuestion.correct_answer )
@@ -66,10 +65,10 @@ const getRandomInt = max => {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-const options = computed(() => {
-    let answers = [...question.value.incorrect_answers]
-    answers.splice(getRandomInt(4), 0, answer.value)
-    return answers
+const answers = computed(() => {
+    const answersList = [...question.value.incorrect_answers]
+    answersList.splice(getRandomInt(4), 0, answer.value)
+    return answersList
 })
 
 // Decodifica Unicode y caracteres especiales de la respuesta de la API
@@ -91,7 +90,7 @@ const handleAnswer = (e) => {
     console.log('val -> ', val)
     console.log('decodedAnswer -> ', decodedAnswer)
 
-    el.classList.remove('hover:bg-pink-400', 'dark:hover:bg-pink-500')
+    el.classList.remove('md:hover:bg-pink-400', 'md:dark:hover:bg-pink-500')
 
     if (val == decodedAnswer) {
         el.classList.replace('dark:bg-neutral-900', 'bg-green-500')
@@ -108,7 +107,7 @@ const handleAnswer = (e) => {
 
         setTimeout(() => {
             el.classList.remove('bg-green-500', 'bg-red-500')
-            el.classList.add('bg-neutral-200', 'dark:bg-neutral-900', 'hover:bg-pink-400', 'dark:hover:bg-pink-500')
+            el.classList.add('bg-neutral-200', 'dark:bg-neutral-900', 'md:hover:bg-pink-400', 'md:dark:hover:bg-pink-500')
             store.index += 1
             }, 1000)
     } else {

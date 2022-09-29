@@ -1,6 +1,6 @@
 <template>
 
-    <div class="md:h-3/5 w-8 my-auto ml-8 py-4">
+    <div class="absolute w-auto md:w-8 my-auto ml-8 md:py-4">
         
         <div
             :class="btnClasses" class="z-50"
@@ -43,11 +43,10 @@ import gsap from 'gsap';
 
 const showOptions = ref(false)
 
-const btnClasses = 'w-8 h-8 absolute border rounded-full flex justify-center items-center cursor-pointer bg-neutral-100 text-neutral-700 hover:shadow-lg hover:text-pink-400 hover:border-pink-400 dark:bg-neutral-900 dark:text-neutral-500 dark:border-neutral-500 dark:hover:bg-pink-500 dark:hover:text-neutral-900 dark:hover:border-none'
-const btnIcoClasses = 'mdi mdi-18px mdi-flip-h '
+const btnClasses = 'w-8 h-8 absolute border rounded-full flex justify-center items-center cursor-pointer bg-neutral-100 text-neutral-700 md:hover:shadow-lg md:hover:text-pink-400 md:hover:border-pink-400 dark:bg-neutral-900 dark:text-neutral-700 dark:border-neutral-800 md:dark:hover:bg-pink-500 md:dark:hover:text-neutral-900 md:dark:hover:border-none'
+const btnIcoClasses = 'mdi mdi-18px mdi-flip-h'
 
 function setTheme(){
-    // console.log('setTheme onMounted ... -> ', localStorage.theme)
     if(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark')
         localStorage.theme = 'dark'
@@ -84,15 +83,21 @@ function changeTheme(theme){
 }
 
 const animIn = () => {
-    gsap.fromTo('#btn-one', {opacity: 0, y: 0}, {opacity: 1, y: 45, duration: .2, ease: 'sine.inOut'})
-    gsap.fromTo('#btn-two', {opacity: 0, y: 0}, {opacity: 1, y: 90, duration: .2, ease: 'sine.inOut'})
-    gsap.fromTo('#btn-three', {opacity: 0, y: 0}, {opacity: 1, y: 135, duration: .2, ease: 'sine.inOut'})
+    if (window.innerWidth >= 768 ){
+        gsap.fromTo('#btn-one', {opacity: 0, y: 0}, {opacity: 1, y: 45, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-two', {opacity: 0, y: 0}, {opacity: 1, y: 90, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-three', {opacity: 0, y: 0}, {opacity: 1, y: 135, duration: .2, ease: 'sine.inOut'})
+    } else {
+        gsap.fromTo('#btn-one', {opacity: 0, x: 0}, {opacity: 1, x: -45, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-two', {opacity: 0, x: 0}, {opacity: 1, x: -90, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-three', {opacity: 0, x: 0}, {opacity: 1, x: -135, duration: .2, ease: 'sine.inOut'})
+    }
 }
 
 const animOut = () => {
-    gsap.to('#btn-one', {opacity: 0, y: 0, duration: .2, ease: 'sine.out'})
-    gsap.to('#btn-two', {opacity: 0, y: 0, duration: .2, ease: 'sine.out'})
-    gsap.to('#btn-three', {opacity: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-one', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-two', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-three', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
 } 
 
 onMounted(() => {
