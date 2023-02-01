@@ -39,12 +39,3 @@ onMounted(() => {
 })
 
 </script>
-
-<style>
-
-#dark-mode-selector {
-    position: absolute;
-    top: 5%;
-    right: 5%;
-}
-</style>

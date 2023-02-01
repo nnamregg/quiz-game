@@ -1,36 +1,25 @@
 <template>
 
-    <div class="absolute w-auto md:w-8 my-auto ml-8 md:py-4">
+    <div class="absolute w-auto my-auto ml-8 md:py-4">
         
-        <div
-            :class="btnClasses" class="z-50"
+        <button
+            :class="btnClasses" class="absolute z-50"
             @click="toggleOptions"
         >
-            <span :class="btnIcoClasses" class="mdi-coach-lamp"></span>
-        </div>
+            <span :class="btnIcoClasses + ' ' + themes[currentThemeSelection].ico"></span>
+        </button>
 
-        <div
-            id="btn-one"
-            :class="btnClasses" class="z-40"
-            @click="changeTheme('dark')"
-        >
-            <span :class="btnIcoClasses" class="mdi-weather-night"></span>
-        </div>
-        
-        <div
-            id="btn-two"
-            :class="btnClasses" class="z-30"
-            @click="changeTheme('light')"
-        >
-            <span :class="btnIcoClasses" class="mdi-weather-sunny"></span>
-        </div>
-        
-        <div
-            id="btn-three"
-            :class="btnClasses" class="z-20"
-            @click="changeTheme('system')"
-        >
-            <span :class="btnIcoClasses" class="mdi-monitor-eye"></span>
+        <div v-for="(theme, key) in themes" :id="`btn-${key}`" class="absolute flex items-center w-auto group">
+            <button
+                :class="btnClasses"
+                @click="setTheme(key)"
+            >
+                <span :class="btnIcoClasses + ' ' + theme.ico" ></span>
+            </button>
+            
+            <div class="absolute hidden left-8 font-bold text-sm text-neutral-700 dark:text-pink-400 py-1.5 px-2 lg:group-hover:block">
+                <p>{{ themes[key].name }}</p>
+            </div>
         </div>
 
     </div>
@@ -38,76 +27,101 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onBeforeMount } from 'vue';
 import gsap from 'gsap';
 
 const showOptions = ref(false)
 
-const btnClasses = 'w-8 h-8 absolute border rounded-full flex justify-center items-center cursor-pointer bg-neutral-100 text-neutral-700 md:hover:shadow-lg md:hover:text-pink-400 md:hover:border-pink-400 dark:bg-neutral-900 dark:text-neutral-700 dark:border-neutral-800 md:dark:hover:bg-pink-500 md:dark:hover:text-neutral-900 md:dark:hover:border-none'
-const btnIcoClasses = 'mdi mdi-18px mdi-flip-h'
+const btnClasses = 'w-8 h-8 border rounded-full flex justify-center items-center cursor-pointer bg-neutral-100 text-neutral-700 md:hover:shadow-lg md:hover:text-pink-400 md:hover:border-pink-400 dark:bg-neutral-900 dark:text-neutral-700 dark:border-neutral-800 md:dark:hover:bg-pink-500 md:dark:hover:text-neutral-900 md:dark:hover:border-none'
+const btnIcoClasses = 'relative mdi mdi-18px mdi-flip-h'
 
-function setTheme(){
-    if(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark')
-        localStorage.theme = 'dark'
-    } else {
-        document.documentElement.classList.remove('dark')
-        localStorage.theme = 'light'
+const themes = {
+    dark: {
+        ico: 'mdi-weather-night',
+        name: 'Oscuro'
+    },
+    light: {
+        ico: 'mdi-weather-sunny',
+        name: 'Claro'
+    },
+    system: {
+        ico: 'mdi-monitor-eye',
+        name: 'Sistema'
     }
 }
 
-function toggleOptions(){
+const currentThemeSelection = ref('system')
+
+const checkLocalStorageTheme = () => {
+    localStorage.theme
+        ? setTheme(localStorage.theme)
+        : setTheme('system')
+}
+
+const setTheme = theme => {
+    currentThemeSelection.value = theme
+
+    if(theme == 'system') {
+        setSystemPrefMode()
+    } else {
+        theme == 'dark'
+            ? setDarkMode()
+            : setLightMode()
+    }
+
+    if(showOptions.value) toggleOptions()
+}
+
+const toggleOptions = () => {
     showOptions.value = !showOptions.value
 }
 
+const bodyElement = document.documentElement
+
 const setDarkMode = () => {
-    document.documentElement.classList.add('dark')
+    bodyElement.classList.add('dark')
     localStorage.theme = 'dark'
 }
 
 const setLightMode = () => {
-    document.documentElement.classList.remove('dark')
+    bodyElement.classList.remove('dark')
     localStorage.theme = 'light'
 }
 
-function changeTheme(theme){
-    if (theme !== 'system') {
-        theme === 'dark' ?
-        setDarkMode() :
-        setLightMode()
-    } else {
-        localStorage.removeItem('theme')
-        setTheme()
-    }
-    showOptions.value = false
+const setSystemPrefMode  = () => {
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? bodyElement.classList.add('dark')
+        : bodyElement.classList.remove('dark')
+    localStorage.removeItem('theme')
 }
 
 const animIn = () => {
     if (window.innerWidth >= 768 ){
-        gsap.fromTo('#btn-one', {opacity: 0, y: 0}, {opacity: 1, y: 45, duration: .2, ease: 'sine.inOut'})
-        gsap.fromTo('#btn-two', {opacity: 0, y: 0}, {opacity: 1, y: 90, duration: .2, ease: 'sine.inOut'})
-        gsap.fromTo('#btn-three', {opacity: 0, y: 0}, {opacity: 1, y: 135, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-dark', {opacity: 0, y: 0}, {opacity: 1, y: 45, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-light', {opacity: 0, y: 0}, {opacity: 1, y: 90, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-system', {opacity: 0, y: 0}, {opacity: 1, y: 135, duration: .2, ease: 'sine.inOut'})
     } else {
-        gsap.fromTo('#btn-one', {opacity: 0, x: 0}, {opacity: 1, x: -45, duration: .2, ease: 'sine.inOut'})
-        gsap.fromTo('#btn-two', {opacity: 0, x: 0}, {opacity: 1, x: -90, duration: .2, ease: 'sine.inOut'})
-        gsap.fromTo('#btn-three', {opacity: 0, x: 0}, {opacity: 1, x: -135, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-dark', {opacity: 0, x: 0}, {opacity: 1, x: -45, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-light', {opacity: 0, x: 0}, {opacity: 1, x: -90, duration: .2, ease: 'sine.inOut'})
+        gsap.fromTo('#btn-system', {opacity: 0, x: 0}, {opacity: 1, x: -135, duration: .2, ease: 'sine.inOut'})
     }
 }
 
 const animOut = () => {
-        gsap.to('#btn-one', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
-        gsap.to('#btn-two', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
-        gsap.to('#btn-three', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-dark', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-light', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
+        gsap.to('#btn-system', {opacity: 0, x: 0, y: 0, duration: .2, ease: 'sine.out'})
 } 
 
-onMounted(() => {
-    setTheme()
+onBeforeMount(() => {
+    checkLocalStorageTheme()
 })
 
+
 watch(showOptions, (newVal) => {
-    newVal === true ?
-    animIn() :
-    animOut()
+    newVal === true
+        ? animIn()
+        : animOut()
 })
 
 </script>
