@@ -44,7 +44,7 @@ export const useStore = defineStore('main', () => {
             const data = await response.json()
             this.categories = data.trivia_categories
         } catch(error) {
-            console.log(error)
+            alert(error)
         }
     }
 

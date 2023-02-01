@@ -15,7 +15,7 @@
                     <Timer />
                 </div>
             </div>
-                <h2 class="text-left text-4xl lg:text-5xl my-10">{{ decodeHTML(question.question) }}</h2>
+                <h2 class="text-left text-xl md:text-3xl lg:text-5xl my-10">{{ decodeHTML(question.question) }}</h2>
         </div>
 
         <div id="answersAnim" class="grid grid-cols-1 my-0 w-full md:grid-cols-2 absolute bottom-0">
@@ -87,9 +87,6 @@ const handleAnswer = (e) => {
     let val = el.innerText
     let decodedAnswer = decodeHTML(answer.value)
     
-    console.log('val -> ', val)
-    console.log('decodedAnswer -> ', decodedAnswer)
-
     el.classList.remove('md:hover:bg-pink-400', 'md:dark:hover:bg-pink-500')
 
     if (val == decodedAnswer) {

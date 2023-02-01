@@ -5,7 +5,7 @@
         <template v-if="(store.index == store.quizLength)">
             <div class="anim-top mx-auto mt-4 w-28 rounded flex justify-between items-center bg-pink-100 dark:bg-neutral-800">
                 <span class="mdi mdi-scoreboard mdi-18px pl-2 text-pink-400 dark:text-pink-500"></span>
-                <span class="text-2xl md:text-3xl font-semibold mx-auto px-2.5 py-0.5 rounded">{{ store.score }} / {{ store.quizLength }}</span>
+                <span class="text-2xl lg:text-3xl font-semibold mx-auto px-2.5 py-0.5 rounded">{{ store.score }} / {{ store.quizLength }}</span>
             </div>
             <div class="anim-center max-w-md mx-auto mt-16">
                 <span class="mdi mdi-36px" :class="finalScore.ico"></span>

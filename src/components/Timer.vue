@@ -77,14 +77,11 @@ watch(timeLeft, (newVal) => {
     if (newVal === 0) {
         clearInterval(timerInterval.value)
         store.timer.counterOn = false
-        console.log('counterOn en watcher de timeLeft -> ', counterOn)
-        console.log('interval cleared ? -> ', timerInterval.value)
         store.index = 100
     }
 })
 
 watch(counterOn, (newVal) => {
-    console.log('newVal de counterOn -> ', newVal)
     if (newVal === true) {
         startTimer()
     } else {
