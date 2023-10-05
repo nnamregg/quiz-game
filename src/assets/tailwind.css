@@ -3,32 +3,30 @@
 @tailwind utilities;
 
 @layer base {
-    * {
-        @apply font-sans;
-    }
-    body {
-        @apply bg-neutral-200 dark:bg-neutral-900;
-        @apply text-neutral-800 dark:text-neutral-200;
-        @apply text-center;
-    }
+  * {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-neutral-200 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 text-center bg-[url('bg-pattern-light.svg')] dark:bg-[url('bg-pattern-dark.svg')];
+  }
 }
 
 @layer components {
-    /* stroke de timer */
-    .nofill {
-        fill: none !important;
-        stroke: none !important;
-    }
-    .remaining_path {
-        stroke-width: 8.5px;
-        stroke-linecap: round;
-        transform: rotate(90deg);
-        transform-origin: center;
-        transition: 1s linear all;
-        fill-rule: nonzero;
-    }
+  /* stroke de timer */
+  .nofill {
+    fill: none !important;
+    stroke: none !important;
+  }
+  .remaining_path {
+    stroke-width: 8.5px;
+    stroke-linecap: round;
+    transform: rotate(90deg);
+    transform-origin: center;
+    transition: 1s linear all;
+    fill-rule: nonzero;
+  }
 }
 
 @layer utilities {
-    @import url("@mdi/font/css/materialdesignicons.css");
+  @import url("@mdi/font/css/materialdesignicons.css");
 }
