@@ -3,6 +3,9 @@ node_modules
 /public/img
 /todo*
 
+# baks
+*.bak
+
 # local env files
 .env.local
 .env.*.local
