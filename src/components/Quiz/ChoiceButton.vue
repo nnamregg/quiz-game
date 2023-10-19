@@ -2,8 +2,7 @@
 import { ref, computed, onUpdated } from "vue";
 import { twMerge as twm } from "tailwind-merge";
 
-const selected = ref(false);
-const choiceRef = ref(null);
+const isSelected = ref(false);
 
 const props = defineProps({
   correct: {
@@ -14,30 +13,29 @@ const props = defineProps({
 const emit = defineEmits(["handleAnswer"]);
 
 const CHOICE_BASE_CLASSES =
-"flex justify-center items-center h-16 md:h-20 text-sm lg:text-base font-semibold px-1 py-auto cursor-pointer transition transform duration-75 bg-neutral-200 hover:bg-pink-400 hover:text-neutral-100 dark:bg-neutral-800/10 dark:hover:bg-pink-500";
+  "py-auto flex h-16 transform cursor-pointer items-center justify-center bg-neutral-200 px-1 text-sm font-semibold transition duration-75 hover:bg-neutral-200/25 active:bg-pink-300 dark:bg-neutral-800/10 dark:hover:bg-neutral-700/25 dark:active:bg-teal-400/75 md:h-20 lg:text-base";
 
 const choiceClasses = computed(() => {
   return twm(
     CHOICE_BASE_CLASSES,
-    selected.value && (props.correct ? "!bg-green-500" : "!bg-red-500")
-  )
+    isSelected.value && (props.correct ? "!bg-green-500" : "!bg-red-500"),
+  );
 });
 
 onUpdated(() => {
   setTimeout(() => {
-    selected.value = false;
-  }, 1000)
-})
+    isSelected.value = false;
+  }, 1000);
+});
 
 function btnClick() {
-  selected.value = true;
+  isSelected.value = true;
   emit("handleAnswer");
 }
-
 </script>
 
 <template>
-  <button ref="choiceRef" :class="choiceClasses" @click="btnClick" :disabled="selected">
+  <button :class="choiceClasses" @click="btnClick" :disabled="isSelected">
     <slot> </slot>
   </button>
 </template>

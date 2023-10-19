@@ -8,7 +8,8 @@ export const useStore = defineStore("main", () => {
   const quizOptions = reactive({
     amount: 10,
     category: 0,
-    difficulty: "",
+    difficulty: "any",
+    type: "multiple"
   });
   const questions = ref([]);
   const index = ref(0);
@@ -22,8 +23,8 @@ export const useStore = defineStore("main", () => {
 
   // Getters
   const quizLength = computed(() => questions.value.length);
-  const timeLeft = computed(() => timer.timeLimit - timer.timePassed);
   const currentQuestion = computed(() => questions.value[index.value]);
+  const timeLeft = computed(() => timer.timeLimit - timer.timePassed);
 
   // Actions
   function setQuizAmount(amount) {
@@ -38,6 +39,14 @@ export const useStore = defineStore("main", () => {
     quizOptions.difficulty = difficulty;
   }
 
+  /*
+  function resetOptions() {
+    quizOptions.amount = 10
+    quizOptions.category = 0
+    quizOptions.difficulty = ""
+  }
+  */
+
   // Async Actions
   async function getCategories() {
     try {
@@ -51,12 +60,12 @@ export const useStore = defineStore("main", () => {
   async function getTriviaQuestions() {
     const url = "https://opentdb.com/api.php";
 
-    const params = {
-      amount: quizOptions.amount,
-      category: quizOptions.category,
-      difficulty: quizOptions.difficulty,
-      type: "multiple",
-    };
+    const params = {};
+
+    Object.entries(quizOptions).forEach(([key, val]) => {
+      if(val === 0 || val === "any") return;
+      params[key] = val;
+    })
 
     try {
       const response = await axios({ method: "post", url, params });

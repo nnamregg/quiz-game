@@ -3,6 +3,9 @@ const colors = require("tailwindcss/colors");
 module.exports = {
   content: ["./public/**/*.html", "./src/**/*.vue"],
   darkMode: "class", // or 'media' or 'class'
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       fontFamily: {

@@ -11,10 +11,10 @@ const props = defineProps({
   question: {
     type: Object,
     required: true,
-  }
-})
+  },
+});
 
-const emit = defineEmits(['updateProgress'])
+const emit = defineEmits(["updateProgress"]);
 
 const difficultyIcon = computed(() =>
   setDifficultyIcon(props.question.difficulty),
@@ -63,9 +63,9 @@ function handleAnswer(index) {
 
   const choice = choices.value.at(index);
   if (choice.correct) store.score++;
-  
-  emit("updateProgress")
-  
+
+  emit("updateProgress");
+
   animOut();
   setTimeout(() => {
     store.index++;
@@ -88,15 +88,15 @@ const animIn = () => {
 const animOut = () => {
   gsap.to("#questionAnim", {
     opacity: 0,
-    delay: .5,
-    duration: .3,
+    delay: 0.5,
+    duration: 0.3,
     ease: "expo.out",
   });
   gsap.to("#choicesAnim", {
     opacity: 0,
     y: 250,
-    delay: .5,
-    duration: .3,
+    delay: 0.5,
+    duration: 0.3,
     ease: "expo.out",
   });
 };
@@ -121,30 +121,25 @@ onMounted(() => {
 onUpdated(() => {
   updateQuestion();
 });
-
 </script>
 
 <template>
   <!-- question container -->
   <div id="questionAnim" class="h-auto w-full px-6 pb-4">
-
     <div class="mx-auto mt-8 flex w-full justify-between lg:w-[95%]">
-      
       <div>
         <span class="mdi mr-2" :class="difficultyIcon"></span>
         <small class="my-1.5 text-xs leading-none lg:text-sm">{{
           props.question.category
         }}</small>
       </div>
-      
-      <Timer />
 
+      <Timer />
     </div>
 
-    <p class="my-10 text-left text-2xl md:text-3xl lg:text-5xl">
+    <p class="my-10 h-56 overflow-y-auto text-left text-3xl lg:text-4xl">
       {{ decodeHTML(props.question.question) }}
     </p>
-
   </div>
 
   <!-- choices container -->
