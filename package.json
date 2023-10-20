@@ -5,12 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-<<<<<<< HEAD
-    "tailwind-build": "npx tailwindcss -i ./src/assets/tailwind.css -o ./src/assets/styles.css --watch",
+    "tw-build": "npx tailwindcss -i ./src/assets/tailwind.css -o ./src/assets/styles.css --watch",
     "gh-deploy": "node scripts/gh-pages-deploy.js"
-=======
-    "tw-build": "npx tailwindcss -i ./src/assets/tailwind.css -o ./src/assets/styles.css --watch"
->>>>>>> develop
   },
   "dependencies": {
     "@mdi/font": "^7.0.96",
