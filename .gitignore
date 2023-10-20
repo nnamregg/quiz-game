@@ -6,6 +6,9 @@ node_modules
 # baks
 *.bak
 
+# production build
+dist
+
 # local env files
 .env.local
 .env.*.local
