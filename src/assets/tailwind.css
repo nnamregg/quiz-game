@@ -7,7 +7,7 @@
     @apply font-sans;
   }
   body {
-    @apply px-4 bg-neutral-200 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 text-center bg-[url('bg-pattern-light.svg')] dark:bg-[url('bg-pattern-dark.svg')];
+    @apply bg-neutral-200 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 text-center bg-[url('bg-pattern-light.svg')] dark:bg-[url('bg-pattern-dark.svg')];
   }
 }
 
