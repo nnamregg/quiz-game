@@ -3,6 +3,12 @@ node_modules
 /public/img
 /todo*
 
+# baks
+*.bak
+
+# production build
+dist
+
 # local env files
 .env.local
 .env.*.local
