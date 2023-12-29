@@ -14,6 +14,9 @@ const props = defineProps({
   },
 });
 
+const questionContainer = ref(null);
+const choicesContainer = ref(null);
+
 const emit = defineEmits(["updateProgress"]);
 
 const difficultyIcon = computed(() =>
@@ -60,46 +63,38 @@ const decodeHTML = (str) => {
 
 function handleAnswer(index) {
   store.timer.counterOn = false;
-
+  
   const choice = choices.value.at(index);
-  if (choice.correct) store.score++;
-
+  if (choice.correct) store.scorePoint();
+  
   emit("updateProgress");
-
-  animOut();
+  
   setTimeout(() => {
-    store.index++;
+    tl.reverse();
+  }, 500);
+
+  setTimeout(() => {
+    store.timer.timePassed = 0;
+    store.nextQuestion();
   }, 1000);
 }
 
-const animIn = () => {
-  gsap.fromTo(
-    "#questionAnim",
-    { opacity: 0 },
-    { opacity: 1, delay: 0.3, duration: 0.2, ease: "expo.in" },
-  );
-  gsap.fromTo(
-    "#choicesAnim",
-    { opacity: 0, y: 250 },
-    { opacity: 1, y: 0, delay: 0.3, duration: 0.5, ease: "expo.in" },
-  );
-};
+const tl = gsap.timeline({ duration: 0.5, ease: "expo.in" });
 
-const animOut = () => {
-  gsap.to("#questionAnim", {
-    opacity: 0,
-    delay: 0.5,
-    duration: 0.3,
-    ease: "expo.out",
-  });
-  gsap.to("#choicesAnim", {
-    opacity: 0,
-    y: 250,
-    delay: 0.5,
-    duration: 0.3,
-    ease: "expo.out",
-  });
-};
+function setupAnimations() {
+  tl.fromTo(
+    questionContainer.value,
+    { opacity: 0 },
+    { opacity: 1 },
+    "animateIn",
+  );
+  tl.fromTo(
+    choicesContainer.value,
+    { opacity: 0, y: 250 },
+    { opacity: 1, y: 0 },
+    "animateIn",
+  );
+}
 
 const updateTitle = () => {
   document.title = `Question ${store.index + 1} / ${store.quizLength}`;
@@ -107,14 +102,16 @@ const updateTitle = () => {
 
 const updateQuestion = () => {
   updateTitle();
-  animIn();
+
+  tl.play("animateIn");
+
   setTimeout(() => {
     store.timer.counterOn = true;
-    store.timer.timePassed = 0;
   }, 500);
 };
 
 onMounted(() => {
+  setupAnimations();
   updateQuestion();
 });
 
@@ -125,7 +122,7 @@ onUpdated(() => {
 
 <template>
   <!-- question container -->
-  <div id="questionAnim" class="h-auto w-full px-6 pb-4">
+  <div ref="questionContainer" class="h-auto w-full px-6 pb-4">
     <div class="mx-auto mt-8 flex w-full justify-between lg:w-[95%]">
       <div>
         <span class="mdi mr-2" :class="difficultyIcon"></span>
@@ -143,7 +140,10 @@ onUpdated(() => {
   </div>
 
   <!-- choices container -->
-  <div id="choicesAnim" class="mt-auto grid w-full grid-cols-1 md:grid-cols-2">
+  <div
+    ref="choicesContainer"
+    class="mt-auto grid w-full grid-cols-1 md:grid-cols-2"
+  >
     <ChoiceButton
       v-for="(choice, index) in choices"
       :key="index"

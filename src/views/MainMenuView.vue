@@ -2,11 +2,14 @@
 import { ref, onMounted } from "vue";
 import { useStore } from "@/stores/main";
 import { twMerge as twm } from "tailwind-merge";
+import { gsap } from "gsap";
 
 const store = useStore();
 
+const goBtnRef = ref(null);
+
 const ICO_BG_CLASSES =
-  "mr-3 mt-2 flex h-9 w-9 shrink-0 items-center rounded-full bg-pink-400 dark:bg-teal-600";
+  "mr-3 mt-2 flex h-9 w-9 shrink-0 items-center rounded-full bg-pink-400 dark:bg-teal-600 form-icon";
 
 const BASE_ICO_CLASSES =
   "mdi mdi-counter m-auto text-xl text-neutral-100 dark:text-neutral-900";
@@ -35,13 +38,47 @@ const isDisabled = ref(false);
 
 const getQuiz = () => {
   isDisabled.value = true;
+  tl.reverse();
   setTimeout(() => {
     store.getTriviaQuestions();
   }, 200);
 };
 
+const tl = gsap.timeline({
+  duration: 0.2,
+  ease: "elastic.out(1,0.3)",
+  paused: true,
+});
+
+function buildTimeline() {
+  tl.fromTo(
+      ".form-icon",
+      { scale: 0, rotation: 360 },
+      { scale: 1, rotation: 0 },
+      "animateIn",
+    ).fromTo(
+      ".form-control",
+      { opacity: 0, "clip-path": "polygon(0 0, 10% 0, 6% 100%, 0% 100%)" },
+      {
+        opacity: 1,
+        "clip-path": "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        // delay: 0.2,
+        duration: 0.5,
+      },
+      "animateIn",
+    )
+    .fromTo(
+      goBtnRef.value,
+      { y: 300 },
+      { opacity: 1, y: 0, duration: 0.3 },
+      "animateIn",
+    );
+}
+
 onMounted(() => {
   document.title = "Select Your Quiz";
+  buildTimeline();
+  tl.play("animateIn");
 });
 </script>
 
@@ -55,7 +92,7 @@ onMounted(() => {
         <div :class="ICO_BG_CLASSES">
           <span :class="twm(BASE_ICO_CLASSES, 'mdi-counter')"></span>
         </div>
-        <div class="h-auto w-full">
+        <div class="form-control h-auto w-full">
           <label for="amount" :class="LABEL_CLASSES">Questions amount</label>
           <input
             type="number"
@@ -73,7 +110,7 @@ onMounted(() => {
         <div :class="ICO_BG_CLASSES">
           <span :class="twm(BASE_ICO_CLASSES, 'mdi-flask')"></span>
         </div>
-        <div class="h-auto w-full">
+        <div class="form-control h-auto w-full">
           <label for="category" :class="LABEL_CLASSES">Category</label>
           <select
             id="category"
@@ -97,7 +134,7 @@ onMounted(() => {
         <div :class="ICO_BG_CLASSES">
           <span :class="twm(BASE_ICO_CLASSES, 'mdi-gauge')"></span>
         </div>
-        <div class="h-auto w-full">
+        <div class="form-control h-auto w-full">
           <label for="difficulty" :class="LABEL_CLASSES">Difficulty</label>
           <select
             id="difficulty"
@@ -115,9 +152,11 @@ onMounted(() => {
     </div>
 
     <button
-      class="mx-auto h-auto w-full transform cursor-pointer bg-neutral-200 p-9 text-2xl font-semibold leading-5 text-neutral-700 transition hover:bg-neutral-200/25 hover:text-pink-400 hover:shadow-sm active:bg-pink-300 active:text-neutral-50 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-700/50 dark:hover:text-teal-400 dark:active:bg-teal-300 dark:active:text-neutral-800 md:mb-4 md:max-w-xs md:rounded md:p-6"
+      class="mx-auto h-auto w-full transform cursor-pointer bg-neutral-200 p-9 text-2xl font-semibold leading-5 text-neutral-700 opacity-0 transition hover:bg-neutral-200/25 hover:text-pink-400 hover:shadow-sm active:bg-pink-300 active:text-neutral-50 md:mb-4 md:max-w-xs md:rounded md:p-6 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-700/50 dark:hover:text-teal-400 dark:active:bg-teal-300 dark:active:text-neutral-800"
       type="submit"
+      id="goBtn"
       :disabled="isDisabled"
+      ref="goBtnRef"
     >
       <span class="mdi mdi-play-circle"></span>
       GO!

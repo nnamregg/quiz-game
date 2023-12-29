@@ -67,34 +67,35 @@ function getFinalScore(avg) {
 }
 
 const resetQuiz = () => {
+  tl.play("animateOut");
   setTimeout(() => {
     store.restartQuiz();
-  }, 500);
+  }, 800);
 };
 
 const newQuiz = () => {
+  tl.play("animateOut");
   setTimeout(() => {
     store.clearQuiz();
-  }, 500);
+  }, 800);
 };
 
-const animateIn = () => {
-  gsap.fromTo(
-    ".anim-top",
-    { opacity: 0, y: -200 },
-    { opacity: 1, y: 0, duration: 0.4, ease: "power4.in" },
-  );
-  gsap.fromTo(
-    ".anim-center",
-    { opacity: 0 },
-    { opacity: 1, y: 0, delay: 0.6, duration: 1, ease: "power1.inOut" },
-  );
-  gsap.fromTo(
+const tl = gsap.timeline({ paused: true });
+
+function buildTimeline() {
+  tl.fromTo(
     ".anim-btn",
-    { opacity: 0 },
-    { opacity: 1, y: 0, delay: 1, duration: 0.8, ease: "linear" },
-  );
-};
+    { opacity: 0, y: 250 },
+    { opacity: 1, y: 0, delay: 0.5, duration: 0.5, ease: "linear" },
+    "animateIn",
+  )
+    .addPause()
+    .to(
+      "#resultsContainer",
+      { opacity: 0, scale: 1.5, duration: 0.4, ease: "power4.out" },
+      "animateOut",
+    );
+}
 
 const setTitle = () => {
   document.title = props.isTimedOut ? "Out of time" : finalScore.value.text;
@@ -102,15 +103,21 @@ const setTitle = () => {
 
 onMounted(() => {
   setTitle();
-  animateIn();
+  buildTimeline();
+  tl.play("animateIn");
 });
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col pt-16">
+  <div id="resultsContainer" class="flex h-full w-full flex-col pt-16">
     <div class="relative my-12">
       <TimedOut v-if="props.isTimedOut" />
-      <FinalScore v-else :ico="finalScore.ico" :txt="finalScore.text" :score="[store.score, store.quizLength]"/>
+      <FinalScore
+        v-else
+        :ico="finalScore.ico"
+        :txt="finalScore.text"
+        :score="[store.score, store.quizLength]"
+      />
     </div>
     <div class="anim-btn grid w-full grid-cols-1 md:grid-cols-2">
       <button :class="BTN_CLASSES" @click="resetQuiz">
