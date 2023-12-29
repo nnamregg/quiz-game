@@ -90,7 +90,7 @@ watch(timeLeft, (newVal) => {
   if (newVal === 0) {
     clearInterval(timerInterval.value);
     store.timer.counterOn = false;
-    store.index = 100;
+    store.index = null;
   }
 });
 

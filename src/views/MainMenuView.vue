@@ -38,7 +38,6 @@ const getQuiz = () => {
   setTimeout(() => {
     store.getTriviaQuestions();
   }, 200);
-  // isDisabled
 };
 
 onMounted(() => {
