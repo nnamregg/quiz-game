@@ -1,6 +1,9 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { useStore } from "@/stores/main";
 import { gsap } from "gsap";
+
+const store = useStore();
 
 const props = defineProps({
   ico: {
@@ -16,6 +19,57 @@ const props = defineProps({
     required: true
   },
 })
+
+const emit = defineEmits(["setTitle"])
+
+const SCORES = {
+  terrible: {
+    threshold: 20,
+    text: "Terrible",
+    ico: "mdi-emoticon-poop",
+  },
+  low: {
+    threshold: 50,
+    text: "Low",
+    ico: "mdi-emoticon-sad-outline",
+  },
+  nice: {
+    threshold: 74,
+    text: "Nice",
+    ico: "mdi-emoticon-outline",
+  },
+  excelent: {
+    threshold: 99,
+    text: "Excelent",
+    ico: "mdi-emoticon-excited-outline",
+  },
+  perfect: {
+    threshold: 100,
+    text: "Perfect!",
+    ico: "mdi-emoticon-devil-outline",
+  },
+};
+
+const finalScore = computed(() => {
+  const avg = (store.score / store.quizLength) * 100;
+  return getFinalScore(avg);
+});
+
+function getFinalScore(avg) {
+  const { terrible, low, nice, excelent, perfect } = SCORES;
+
+  if (avg < terrible.threshold) {
+    return terrible;
+  } else if (avg <= low.threshold) {
+    return low;
+  } else if (avg <= nice.threshold) {
+    return nice;
+  } else if (avg <= excelent.threshold) {
+    return excelent;
+  } else {
+    return perfect;
+  }
+}
 
 const scoreContainer = ref(null);
 const scoreIcon = ref(null);
@@ -58,6 +112,7 @@ function buildTimeline() {
 }
 
 onMounted(() => {
+  emit("setTitle", finalScore.value.text);
   buildTimeline();
   tl.play("animateIn");
 });
@@ -74,12 +129,12 @@ onMounted(() => {
       >FINAL SCORE</span
     >
     <span class="mx-6 my-1.5 block rounded text-3xl font-bold"
-      >{{ props.score[0] }} / {{ props.score[1] }}</span
+      >{{ store.score }} / {{ store.quizLength }}</span
     >
   </div>
 
   <div class="mx-auto my-14 max-w-md">
-    <span ref="scoreIcon" class="mdi text-8xl block" :class="props.ico"></span>
-    <p ref="scoreText" class="mt-1 text-4xl lg:text-5xl">{{ props.txt }}</p>
+    <span ref="scoreIcon" class="mdi text-8xl block" :class="finalScore.ico"></span>
+    <p ref="scoreText" class="mt-1 text-4xl lg:text-5xl">{{ finalScore.text }}</p>
   </div>
 </template>

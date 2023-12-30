@@ -2,6 +2,8 @@
 import { onMounted, ref } from "vue";
 import { gsap } from "gsap";
 
+const emit = defineEmits(["setTitle"])
+
 const timedOutHeading = ref(null);
 const timedOutIcon = ref(null);
 
@@ -34,6 +36,7 @@ function buildTimeline() {
 }
 
 onMounted(() => {
+  emit("setTitle", "Out of time");
   buildTimeline();
   tl.play("animateIn");
 });

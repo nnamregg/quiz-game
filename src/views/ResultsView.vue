@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useStore } from "@/stores/main";
 import gsap from "gsap";
 import Button from "@/components/Button.vue";
@@ -15,54 +15,15 @@ const props = defineProps({
   },
 });
 
-const finalScore = computed(() => {
-  const avg = (store.score / store.quizLength) * 100;
-  return getFinalScore(avg);
-});
-
-const SCORES = {
-  terrible: {
-    threshold: 20,
-    text: "Terrible",
-    ico: "mdi-emoticon-poop",
-  },
-  low: {
-    threshold: 50,
-    text: "Low",
-    ico: "mdi-emoticon-sad-outline",
-  },
-  nice: {
-    threshold: 74,
-    text: "Nice",
-    ico: "mdi-emoticon-outline",
-  },
-  excelent: {
-    threshold: 99,
-    text: "Excelent",
-    ico: "mdi-emoticon-excited-outline",
-  },
-  perfect: {
-    threshold: 100,
-    text: "Perfect!",
-    ico: "mdi-emoticon-devil-outline",
-  },
-};
-
-function getFinalScore(avg) {
-  const { terrible, low, nice, excelent, perfect } = SCORES;
-
-  if (avg < terrible.threshold) {
-    return terrible;
-  } else if (avg <= low.threshold) {
-    return low;
-  } else if (avg <= nice.threshold) {
-    return nice;
-  } else if (avg <= excelent.threshold) {
-    return excelent;
-  } else {
-    return perfect;
-  }
+const VIEWS = {
+  "TIMED_OUT": TimedOut,
+  "FINAL_SCORE": FinalScore
 }
+
+const currentView = computed(() => props.isTimedOut ? VIEWS["TIMED_OUT"] : VIEWS["FINAL_SCORE"] )
+
+const buttonsContainer = ref(null);
+const viewContainer = ref(null);
 
 const resetQuiz = () => {
   tl.play("animateOut");
@@ -82,42 +43,40 @@ const tl = gsap.timeline({ paused: true });
 
 function buildTimeline() {
   tl.fromTo(
-    ".anim-btn",
+    buttonsContainer.value,
     { opacity: 0, y: 250 },
     { opacity: 1, y: 0, delay: 0.5, duration: 0.5, ease: "linear" },
     "animateIn",
   )
     .addPause()
     .to(
-      "#resultsContainer",
-      { opacity: 0, scale: 1.5, duration: 0.4, ease: "power4.out" },
+      buttonsContainer.value,
+      { opacity: 0, y: 250, delay: 0.2, duration: 0.5, ease: "linear" },
+      "animateOut"
+    )
+    .to(
+      viewContainer.value,
+      { opacity: 0, scale: 0.1, duration: 0.5, ease: "back.in(2)" },
       "animateOut",
     );
 }
 
-const setTitle = () => {
-  document.title = props.isTimedOut ? "Out of time" : finalScore.value.text;
-};
+const setTitle = (title) => {
+  document.title = title;
+}
 
 onMounted(() => {
-  setTitle();
   buildTimeline();
   tl.play("animateIn");
 });
 </script>
 
 <template>
-  <div id="resultsContainer" class="flex h-full w-full flex-col pt-16">
-    <div class="relative my-12">
-      <TimedOut v-if="props.isTimedOut" />
-      <FinalScore
-        v-else
-        :ico="finalScore.ico"
-        :txt="finalScore.text"
-        :score="[store.score, store.quizLength]"
-      />
+  <div class="flex h-full w-full flex-col pt-16">
+    <div ref="viewContainer" class="relative my-12">
+      <component :is="currentView" @set-title="setTitle"></component>
     </div>
-    <div class="anim-btn grid w-full grid-cols-1 md:grid-cols-2">
+    <div ref="buttonsContainer" class="grid w-full grid-cols-1 md:grid-cols-2">
       <Button @action="resetQuiz">
         <span class="mdi mdi-restart mdi-18px mr-2 mt-1"></span>Restart
       </Button>
