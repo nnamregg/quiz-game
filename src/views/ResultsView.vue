@@ -2,6 +2,7 @@
 import { computed, onMounted } from "vue";
 import { useStore } from "@/stores/main";
 import gsap from "gsap";
+import Button from "@/components/Button.vue";
 import TimedOut from "@/components/Results/TimedOut.vue";
 import FinalScore from "@/components/Results/FinalScore.vue";
 
@@ -13,9 +14,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const BTN_CLASSES =
-  "py-auto flex h-16 transform cursor-pointer items-center justify-center bg-neutral-200 px-1 text-sm font-semibold transition duration-75 hover:bg-neutral-200/25 active:bg-pink-300 dark:bg-neutral-800/10 dark:hover:bg-neutral-700/25 dark:active:bg-teal-400/75 md:h-20 lg:text-base";
 
 const finalScore = computed(() => {
   const avg = (store.score / store.quizLength) * 100;
@@ -120,12 +118,12 @@ onMounted(() => {
       />
     </div>
     <div class="anim-btn grid w-full grid-cols-1 md:grid-cols-2">
-      <button :class="BTN_CLASSES" @click="resetQuiz">
+      <Button @action="resetQuiz">
         <span class="mdi mdi-restart mdi-18px mr-2 mt-1"></span>Restart
-      </button>
-      <button :class="BTN_CLASSES" @click="newQuiz">
+      </Button>
+      <Button @action="newQuiz">
         <span class="mdi mdi-restart-alert mdi-18px mr-2 mt-1"></span>New Quiz
-      </button>
+      </Button>
     </div>
   </div>
 </template>
