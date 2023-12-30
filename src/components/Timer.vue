@@ -1,3 +1,91 @@
+<script setup>
+import { ref, watch, computed } from "vue";
+import { twMerge as twm } from "tailwind-merge";
+
+const props = defineProps({
+  activate: {
+    type: Boolean,
+    required: false,
+  },
+});
+
+const emit = defineEmits(["timeOut"]);
+
+const TIME_LIMIT = 10;
+const COLORS = {
+  info: {
+    color: "stroke-teal-500",
+  },
+  warning: {
+    color: "stroke-orange-500",
+    threshold: 5,
+  },
+  alert: {
+    color: "stroke-red-500",
+    threshold: 3,
+  },
+};
+
+const timePassed = ref(0);
+
+const timeLeft = computed(() => TIME_LIMIT - timePassed.value);
+const isTimedOut = computed(() => !(timeLeft.value > 0));
+const timeFraction = computed(() => {
+  const rawTimeFraction = timeLeft.value / 10;
+  return rawTimeFraction - (1 / 10) * (1 - rawTimeFraction);
+});
+const circleDasharray = computed(
+  () => `${(timeFraction.value * 283).toFixed(0)} 283`,
+);
+const remainingPathColor = computed(() => {
+  const { alert, warning, info } = COLORS;
+
+  if (timeLeft.value <= alert.threshold) {
+    return alert.color;
+  } else if (timeLeft.value <= warning.threshold) {
+    return warning.color;
+  } else {
+    return info.color;
+  }
+});
+
+const timerInterval = ref(null);
+
+const startTimer = () => {
+  if (timerInterval.value) stopTimer();
+  timerInterval.value = setInterval(() => timePassed.value++, 1000);
+};
+
+const stopTimer = () => {
+  clearInterval(timerInterval.value);
+  setTimeout(() => {
+    timePassed.value = 0;
+  }, 500);
+};
+
+watch(isTimedOut, (newVal) => {
+  if (newVal) emit("timeOut");
+});
+
+watch(
+  () => props.activate,
+  (activate) => {
+    if (activate) {
+      setTimeout(() => {
+        startTimer();
+      }, 500);
+    } else {
+      stopTimer();
+    }
+  },
+  { immediate: true },
+);
+
+/* watch(circleDasharray, (newVal) => {
+  console.log(`circleDasharray newVal: ${newVal}`)
+}) */
+</script>
+
 <template>
   <div class="relative h-10 w-10 lg:h-12 lg:w-12">
     <svg
@@ -14,8 +102,7 @@
         />
         <path
           :stroke-dasharray="circleDasharray"
-          class="remaining_path"
-          :class="remainingPathColor"
+          :class="twm('remaining_path', remainingPathColor)"
           d="
             M 50, 50
             m -45, 0
@@ -33,72 +120,17 @@
   </div>
 </template>
 
-<script setup>
-import { ref, watch, computed, onMounted } from "@vue/runtime-core";
-import { useStore } from "@/stores/main";
-
-const store = useStore();
-const counterOn = computed(() => store.timer.counterOn);
-const timeLeft = computed(() => store.timeLeft);
-
-const timeFraction = computed(() => {
-  const rawTimeFraction = timeLeft.value / 10;
-  return rawTimeFraction - (1 / 10) * (1 - rawTimeFraction);
-});
-
-const circleDasharray = computed(
-  () => `${(timeFraction.value * 283).toFixed(0)} 283`,
-);
-
-const colors = {
-  info: {
-    color: "stroke-teal-500",
-  },
-  warning: {
-    color: "stroke-orange-500",
-    threshold: 5,
-  },
-  alert: {
-    color: "stroke-red-500",
-    threshold: 3,
-  },
-};
-
-const remainingPathColor = computed(() => {
-  const { alert, warning, info } = colors;
-
-  if (timeLeft <= alert.threshold) {
-    return alert.color;
-  } else if (timeLeft <= warning.threshold) {
-    return warning.color;
-  } else {
-    return info.color;
-  }
-});
-
-const timerInterval = ref(null);
-const startTimer = () => {
-  clearInterval(timerInterval.value);
-  timerInterval.value = setInterval(() => store.timer.timePassed++, 1000);
-};
-
-onMounted(() => {
-  store.timer.counterOn = true;
-});
-
-watch(timeLeft, (newVal) => {
-  if (newVal === 0) {
-    clearInterval(timerInterval.value);
-    store.timer.counterOn = false;
-    store.index = null;
-  }
-});
-
-watch(counterOn, (newVal) => {
-  if (newVal === true) {
-    startTimer();
-  } else {
-    clearInterval(timerInterval.value);
-  }
-});
-</script>
+<style scoped>
+.nofill {
+  fill: none !important;
+  stroke: none !important;
+}
+.remaining_path {
+  stroke-width: 8.5px;
+  stroke-linecap: round;
+  transform: rotate(90deg);
+  transform-origin: center;
+  transition: 1s linear all;
+  fill-rule: nonzero;
+}
+</style>

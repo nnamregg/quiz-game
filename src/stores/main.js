@@ -15,16 +15,9 @@ export const useStore = defineStore("main", () => {
   const index = ref(0);
   const score = ref(0);
 
-  const timer = reactive({
-    timeLimit: 10,
-    timePassed: 0,
-    counterOn: false,
-  });
-
   // Getters
   const quizLength = computed(() => questions.value.length);
   const currentQuestion = computed(() => questions.value[index.value]);
-  const timeLeft = computed(() => timer.timeLimit - timer.timePassed);
 
   // Actions
   function setQuizAmount(amount) {
@@ -50,8 +43,6 @@ export const useStore = defineStore("main", () => {
   function restartQuiz() {
     index.value = 0;
     score.value = 0;
-    timer.timePassed = 0;
-    timer.counterOn = false;
   }
 
   function clearQuiz() {
@@ -93,9 +84,7 @@ export const useStore = defineStore("main", () => {
     questions,
     index,
     score,
-    timer,
     quizLength,
-    timeLeft,
     currentQuestion,
     setQuizAmount,
     setQuizCategory,

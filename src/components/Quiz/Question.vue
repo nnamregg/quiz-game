@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "@/stores/main";
 import ChoiceButton from "./ChoiceButton.vue";
 import Timer from "@/components/Timer.vue";
@@ -16,6 +16,7 @@ const props = defineProps({
 
 const questionContainer = ref(null);
 const choicesContainer = ref(null);
+const activateTimer = ref(false);
 
 const emit = defineEmits(["updateProgress"]);
 
@@ -62,33 +63,31 @@ const decodeHTML = (str) => {
 };
 
 function handleAnswer(index) {
-  store.timer.counterOn = false;
-  
+  activateTimer.value = false;
+
   const choice = choices.value.at(index);
   if (choice.correct) store.scorePoint();
-  
+
   emit("updateProgress");
-  
+
   setTimeout(() => {
     tl.reverse();
   }, 500);
 
   setTimeout(() => {
-    store.timer.timePassed = 0;
     store.nextQuestion();
   }, 1000);
 }
 
-const tl = gsap.timeline({ duration: 0.5, ease: "expo.in" });
+const tl = gsap.timeline({ duration: 0.5, ease: "expo.in", paused: true });
 
-function setupAnimations() {
+function buildTimeline() {
   tl.fromTo(
     questionContainer.value,
     { opacity: 0 },
     { opacity: 1 },
     "animateIn",
-  );
-  tl.fromTo(
+  ).fromTo(
     choicesContainer.value,
     { opacity: 0, y: 250 },
     { opacity: 1, y: 0 },
@@ -101,23 +100,22 @@ const updateTitle = () => {
 };
 
 const updateQuestion = () => {
-  updateTitle();
-
   tl.play("animateIn");
-
-  setTimeout(() => {
-    store.timer.counterOn = true;
-  }, 500);
+  updateTitle();
+  activateTimer.value = true;
 };
 
 onMounted(() => {
-  setupAnimations();
+  buildTimeline();
   updateQuestion();
 });
 
-onUpdated(() => {
-  updateQuestion();
-});
+watch(
+  () => props.question,
+  () => {
+    updateQuestion();
+  },
+);
 </script>
 
 <template>
@@ -131,7 +129,7 @@ onUpdated(() => {
         }}</small>
       </div>
 
-      <Timer />
+      <Timer :activate="activateTimer" @time-out="() => (store.index = null)" />
     </div>
 
     <p class="my-10 h-56 overflow-y-auto text-left text-3xl lg:text-4xl">
