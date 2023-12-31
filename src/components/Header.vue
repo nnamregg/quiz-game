@@ -5,7 +5,7 @@ import ThemeSelector from "@/components/ThemeSelector.vue";
 <template>
   <header class="w-full p-6">
     <img
-      src="logo-alt.svg"
+      src="logo.svg"
       alt="Logo Yet Another Trivia Game"
       class="mx-auto mb-2 mt-2 lg:mt-6"
       width="180"
