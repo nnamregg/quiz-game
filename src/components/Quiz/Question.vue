@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "@/stores/main";
 import ChoiceButton from "./ChoiceButton.vue";
 import Timer from "@/components/Timer.vue";
@@ -13,6 +13,10 @@ const props = defineProps({
     required: true,
   },
 });
+
+const questionContainer = ref(null);
+const choicesContainer = ref(null);
+const activateTimer = ref(false);
 
 const emit = defineEmits(["updateProgress"]);
 
@@ -59,73 +63,64 @@ const decodeHTML = (str) => {
 };
 
 function handleAnswer(index) {
-  store.timer.counterOn = false;
+  activateTimer.value = false;
 
   const choice = choices.value.at(index);
-  if (choice.correct) store.score++;
+  if (choice.correct) store.scorePoint();
 
   emit("updateProgress");
 
-  animOut();
   setTimeout(() => {
-    store.index++;
+    tl.reverse();
+  }, 500);
+
+  setTimeout(() => {
+    store.nextQuestion();
   }, 1000);
 }
 
-const animIn = () => {
-  gsap.fromTo(
-    "#questionAnim",
-    { opacity: 0 },
-    { opacity: 1, delay: 0.3, duration: 0.2, ease: "expo.in" },
-  );
-  gsap.fromTo(
-    "#choicesAnim",
-    { opacity: 0, y: 250 },
-    { opacity: 1, y: 0, delay: 0.3, duration: 0.5, ease: "expo.in" },
-  );
-};
+const tl = gsap.timeline({ duration: 0.5, ease: "expo.in", paused: true });
 
-const animOut = () => {
-  gsap.to("#questionAnim", {
-    opacity: 0,
-    delay: 0.5,
-    duration: 0.3,
-    ease: "expo.out",
-  });
-  gsap.to("#choicesAnim", {
-    opacity: 0,
-    y: 250,
-    delay: 0.5,
-    duration: 0.3,
-    ease: "expo.out",
-  });
-};
+function buildTimeline() {
+  tl.fromTo(
+    questionContainer.value,
+    { opacity: 0 },
+    { opacity: 1 },
+    "animateIn",
+  ).fromTo(
+    choicesContainer.value,
+    { opacity: 0, y: 250 },
+    { opacity: 1, y: 0 },
+    "animateIn",
+  );
+}
 
 const updateTitle = () => {
   document.title = `Question ${store.index + 1} / ${store.quizLength}`;
 };
 
 const updateQuestion = () => {
+  tl.play("animateIn");
   updateTitle();
-  animIn();
-  setTimeout(() => {
-    store.timer.counterOn = true;
-    store.timer.timePassed = 0;
-  }, 500);
+  activateTimer.value = true;
 };
 
 onMounted(() => {
+  buildTimeline();
   updateQuestion();
 });
 
-onUpdated(() => {
-  updateQuestion();
-});
+watch(
+  () => props.question,
+  () => {
+    updateQuestion();
+  },
+);
 </script>
 
 <template>
   <!-- question container -->
-  <div id="questionAnim" class="h-auto w-full px-6 pb-4">
+  <div ref="questionContainer" class="h-auto w-full px-6 pb-4">
     <div class="mx-auto mt-8 flex w-full justify-between lg:w-[95%]">
       <div>
         <span class="mdi mr-2" :class="difficultyIcon"></span>
@@ -134,7 +129,7 @@ onUpdated(() => {
         }}</small>
       </div>
 
-      <Timer />
+      <Timer :activate="activateTimer" @time-out="() => (store.index = null)" />
     </div>
 
     <p class="my-10 h-56 overflow-y-auto text-left text-3xl lg:text-4xl">
@@ -143,7 +138,10 @@ onUpdated(() => {
   </div>
 
   <!-- choices container -->
-  <div id="choicesAnim" class="mt-auto grid w-full grid-cols-1 md:grid-cols-2">
+  <div
+    ref="choicesContainer"
+    class="mt-auto grid w-full grid-cols-1 md:grid-cols-2"
+  >
     <ChoiceButton
       v-for="(choice, index) in choices"
       :key="index"

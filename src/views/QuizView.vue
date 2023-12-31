@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "@/stores/main";
-import Question from "./Question.vue";
+import Question from "@/components/Quiz/Question.vue";
 
 const store = useStore();
 

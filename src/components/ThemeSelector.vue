@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted, watch } from "vue";
 import { twMerge as twm } from "tailwind-merge";
 import gsap from "gsap";
 
@@ -41,7 +41,6 @@ const setThemeFromLocalStorage = () => {
 const setTheme = (theme) => {
   if (theme === currentThemeSelection.value) return;
 
-  console.log("setTheme did NOT return!");
   currentThemeSelection.value = theme;
 
   switch (theme) {
@@ -60,16 +59,13 @@ const setTheme = (theme) => {
 };
 
 const toggleOptions = () => {
-  if(showOptions.value) {
-    animOut();
+  if(!showOptions.value) {
+    showOptions.value = true;
+  } else {
+    tl.play("animateOut");
     setTimeout(() => {
       showOptions.value = false;
     }, 400);
-  } else {
-    showOptions.value = true;
-    setTimeout(() => {
-      animIn();
-    }, 10);
   }
 };
 
@@ -92,55 +88,65 @@ const setSystemPrefMode = () => {
 };
 
 // Animaciones
-function animIn() {
-  gsap.fromTo(
+const tl = gsap.timeline({ paused: true });
+
+function buildTimeline() {
+  tl.fromTo(
     optionsContainer.value,
     { opacity: 0 },
     { opacity: 1, duration: 0.5, ease: "sine.in" },
-  );
-  gsap.fromTo(
+    "animateIn",
+  ).fromTo(
     optionsContainer.value,
     { y: -15 },
     { y: 0, duration: 0.25, ease: "sine.in" },
-  );
-  gsap.fromTo(
+    "animateIn",
+  ).fromTo(
     btns.value.at(0),
-    { x: 50 },
-    { x: 0, delay: 0.2, duration: 0.4, ease: "sine.in" },
-  );
-  gsap.fromTo(
+    { x: 50, opacity: 0.1 },
+    { x: 0, opacity: 1, delay: 0.1, duration: 0.4, ease: "sine.in" },
+    "animateIn",
+  ).fromTo(
     btns.value.at(1),
-    { x: -50 },
-    { x: 0, delay: 0.2, duration: 0.4, ease: "sine.in" },
+    { x: -50, opacity: 0.1 },
+    { x: 0, opacity: 1, delay: 0.1, duration: 0.4, ease: "sine.in" },
+    "animateIn",
   );
-}
-
-function animOut() {
-  gsap.fromTo(
+  tl.addPause();
+  tl.fromTo(
     optionsContainer.value,
     { opacity: 1 },
     { opacity: 0, delay: 0.2, duration: 0.2, ease: "ease.out" },
-  );
-  gsap.fromTo(
+    "animateOut",
+  ).fromTo(
     optionsContainer.value,
     { y: 0 },
     { y: -15, delay: 0.25, duration: 0.15, ease: "sine.out" },
-  );
-  gsap.fromTo(
+    "animateOut",
+  ).fromTo(
     btns.value.at(0),
     { x: 0 },
     { x: 50, duration: 0.2, ease: "sine.out" },
-  );
-  gsap.fromTo(
+    "animateOut",
+  ).fromTo(
     btns.value.at(1),
     { x: 0 },
     { x: -50, duration: 0.2, ease: "sine.out" },
+    "animateOut",
   );
-}
+};
 
 onBeforeMount(() => {
   setThemeFromLocalStorage();
 });
+
+onMounted(() => {
+  buildTimeline();
+})
+
+watch(showOptions, (newVal) => {
+  if(newVal) tl.play("animateIn");
+})
 </script>
 
 <template>
@@ -153,9 +159,8 @@ onBeforeMount(() => {
     </button>
 
     <div
-      v-if="showOptions"
+      v-show="showOptions"
       ref="optionsContainer"
-      id="options-container"
       class="z-0 mx-auto flex max-w-fit gap-4 py-3 opacity-0"
     >
       <button

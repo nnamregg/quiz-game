@@ -9,22 +9,15 @@ export const useStore = defineStore("main", () => {
     amount: 10,
     category: 0,
     difficulty: "any",
-    type: "multiple"
+    type: "multiple",
   });
   const questions = ref([]);
   const index = ref(0);
   const score = ref(0);
 
-  const timer = reactive({
-    timeLimit: 10,
-    timePassed: 0,
-    counterOn: false,
-  });
-
   // Getters
   const quizLength = computed(() => questions.value.length);
   const currentQuestion = computed(() => questions.value[index.value]);
-  const timeLeft = computed(() => timer.timeLimit - timer.timePassed);
 
   // Actions
   function setQuizAmount(amount) {
@@ -39,13 +32,23 @@ export const useStore = defineStore("main", () => {
     quizOptions.difficulty = difficulty;
   }
 
-  /*
-  function resetOptions() {
-    quizOptions.amount = 10
-    quizOptions.category = 0
-    quizOptions.difficulty = ""
+  function scorePoint() {
+    score.value++
   }
-  */
+
+  function nextQuestion() {
+    index.value++;
+  }
+
+  function restartQuiz() {
+    index.value = 0;
+    score.value = 0;
+  }
+
+  function clearQuiz() {
+    questions.value = [];
+    restartQuiz();
+  }
 
   // Async Actions
   async function getCategories() {
@@ -63,9 +66,9 @@ export const useStore = defineStore("main", () => {
     const params = {};
 
     Object.entries(quizOptions).forEach(([key, val]) => {
-      if(val === 0 || val === "any") return;
+      if (val === 0 || val === "any") return;
       params[key] = val;
-    })
+    });
 
     try {
       const response = await axios({ method: "post", url, params });
@@ -81,13 +84,15 @@ export const useStore = defineStore("main", () => {
     questions,
     index,
     score,
-    timer,
     quizLength,
-    timeLeft,
     currentQuestion,
     setQuizAmount,
     setQuizCategory,
     setQuizDifficulty,
+    scorePoint,
+    nextQuestion,
+    restartQuiz,
+    clearQuiz,
     getCategories,
     getTriviaQuestions,
   };
