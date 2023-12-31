@@ -22,4 +22,6 @@ jobs:
         run: npm ci
 
       - name: Run deploy script
-        run: npm run gh-deploy
+        run: |
+            git config user.name "${{ secrets.GH_USERNAME }}" && git config user.email "${{ secrets.GH_EMAIL }}"
+            npm run gh-deploy
