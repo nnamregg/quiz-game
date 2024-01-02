@@ -7,20 +7,21 @@ import TimedOut from "@/components/Results/TimedOut.vue";
 import FinalScore from "@/components/Results/FinalScore.vue";
 
 const store = useStore();
-
+/* 
 const props = defineProps({
   isTimedOut: {
     type: Boolean,
     required: true,
   },
-});
+}); */
 
 const VIEWS = {
   "TIMED_OUT": TimedOut,
   "FINAL_SCORE": FinalScore
 }
 
-const currentView = computed(() => props.isTimedOut ? VIEWS["TIMED_OUT"] : VIEWS["FINAL_SCORE"] )
+const currentView = computed(() => isTimedOut.value ? VIEWS["TIMED_OUT"] : VIEWS["FINAL_SCORE"] );
+const isTimedOut = computed(() => store.index === null );
 
 const buttonsContainer = ref(null);
 const viewContainer = ref(null);

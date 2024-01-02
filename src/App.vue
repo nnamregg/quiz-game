@@ -45,6 +45,6 @@ const errorStr = computed(() => `${store.fetchError.code} - ${store.fetchError.n
   <main
     class="mx-auto mb-8 mt-1 box-border flex h-full w-11/12 max-w-3xl overflow-hidden rounded-md bg-neutral-100/75 shadow-md backdrop-blur-sm hover:shadow-lg dark:bg-neutral-950/75"
   >
-    <component :is="currentView" :isTimedOut="store.index === null"></component>
+    <component :is="currentView"></component>
   </main>
 </template>

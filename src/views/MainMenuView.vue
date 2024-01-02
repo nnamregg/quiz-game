@@ -168,7 +168,7 @@ watch(hasError, (newVal) => {
     <div></div>
 
     <div class="mx-auto w-full md:w-1/2" ref="goBtnRef">
-      <Button :class="GO_BTN_CLASSES" :type="submit" :disabled="isDisabled">
+      <Button :class="GO_BTN_CLASSES" type="submit" :disabled="isDisabled">
         <span class="mdi mdi-play-circle"></span>
         GO!
       </Button>

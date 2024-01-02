@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "@/stores/main";
 import ChoiceButton from "./ChoiceButton.vue";
-import Timer from "@/components/Timer.vue";
+import Timer from "@/components/Quiz/Timer.vue";
 import gsap from "gsap";
 
 const store = useStore();

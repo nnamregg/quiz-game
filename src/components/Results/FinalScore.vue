@@ -5,21 +5,6 @@ import { gsap } from "gsap";
 
 const store = useStore();
 
-const props = defineProps({
-  ico: {
-    type: String,
-    required: true
-  },
-  txt: {
-    type: String,
-    required: true
-  },
-  score: {
-    type: Array,
-    required: true
-  },
-})
-
 const emit = defineEmits(["setTitle"])
 
 const SCORES = {
