@@ -14,6 +14,7 @@ export const useStore = defineStore("main", () => {
   const questions = ref([]);
   const index = ref(0);
   const score = ref(0);
+  const fetchError = ref(null)
 
   // Getters
   const quizLength = computed(() => questions.value.length);
@@ -50,13 +51,29 @@ export const useStore = defineStore("main", () => {
     restartQuiz();
   }
 
+  function setFetchError(err) {
+    const error = {
+      code: err.code,
+      name: err.name,
+      message: err.message,
+    };
+
+    fetchError.value = error;
+  }
+
+  function clearFetchError() {
+    if(!fetchError.value) return;
+    fetchError.value = null;
+  };
+
   // Async Actions
   async function getCategories() {
     try {
       const response = await axios("https://opentdb.com/api_category.php");
       this.categories = response.data.trivia_categories;
-    } catch (error) {
-      alert(error);
+      clearFetchError();
+    } catch (err) {
+      setFetchError(err);
     }
   }
 
@@ -73,8 +90,9 @@ export const useStore = defineStore("main", () => {
     try {
       const response = await axios({ method: "post", url, params });
       this.questions = response.data.results;
-    } catch (error) {
-      console.error(error);
+      clearFetchError();
+    } catch (err) {
+      setFetchError(err);
     }
   }
 
@@ -84,8 +102,10 @@ export const useStore = defineStore("main", () => {
     questions,
     index,
     score,
+    fetchError,
     quizLength,
     currentQuestion,
+    clearFetchError,
     setQuizAmount,
     setQuizCategory,
     setQuizDifficulty,

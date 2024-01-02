@@ -1,13 +1,11 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useStore } from "@/stores/main";
 import { twMerge as twm } from "tailwind-merge";
 import { gsap } from "gsap";
 import Button from "@/components/Button.vue";
 
 const store = useStore();
-
-const goBtnRef = ref(null);
 
 const ICO_BG_CLASSES =
   "mr-3 mt-2 flex h-9 w-9 shrink-0 items-center rounded-full bg-pink-400 dark:bg-teal-600 form-icon";
@@ -21,8 +19,11 @@ const LABEL_CLASSES =
 const INPUT_CLASSES =
   "mx-auto mt-1 w-full border-0 border-t-2 border-neutral-300 bg-transparent px-0 py-1 text-base font-semibold text-neutral-700 focus:border-pink-400 focus:text-pink-500 focus:shadow-md focus:shadow-pink-200/50 focus:ring-0 dark:border-neutral-900 dark:text-neutral-500 dark:focus:border-neutral-700 dark:focus:text-neutral-200 dark:focus:shadow-neutral-800/25 md:py-1.5";
 
-const GO_BTN_CLASSES =
-  "p-9 text-2xl hover:bg-neutral-200/25 hover:text-pink-400 hover:shadow-sm active:bg-pink-300 active:text-neutral-50 md:rounded lg:text-3xl dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-700/50 dark:hover:text-teal-400 dark:active:bg-teal-300 dark:active:text-neutral-800";
+const GO_BTN_CLASSES = "p-9 text-2xl hover:shadow-sm md:rounded lg:text-3xl";
+
+const goBtnRef = ref(null);
+
+const hasError = computed(() => (store.fetchError ? true : false));
 
 const setAmount = (e) => {
   store.setQuizAmount(parseInt(e.target.value));
@@ -81,6 +82,15 @@ onMounted(() => {
   document.title = "Select Your Quiz";
   buildTimeline();
   tl.play("animateIn");
+  store.getCategories();
+});
+
+watch(hasError, (newVal) => {
+  if (newVal) {
+    isDisabled.value = true;
+  } else {
+    isDisabled.value = false;
+  }
 });
 </script>
 
