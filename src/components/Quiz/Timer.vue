@@ -69,21 +69,9 @@ watch(isTimedOut, (newVal) => {
 
 watch(
   () => props.activate,
-  (activate) => {
-    if (activate) {
-      setTimeout(() => {
-        startTimer();
-      }, 500);
-    } else {
-      stopTimer();
-    }
-  },
+  (activate) => activate ? startTimer() : stopTimer(),
   { immediate: true },
 );
-
-/* watch(circleDasharray, (newVal) => {
-  console.log(`circleDasharray newVal: ${newVal}`)
-}) */
 </script>
 
 <template>
