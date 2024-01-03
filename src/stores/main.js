@@ -8,7 +8,7 @@ export const useStore = defineStore("main", () => {
   const quizOptions = reactive({
     amount: 10,
     category: 0,
-    difficulty: "any",
+    difficulty: 0,
     type: "multiple",
   });
   const questions = ref([]);
@@ -83,7 +83,7 @@ export const useStore = defineStore("main", () => {
     const params = {};
 
     Object.entries(quizOptions).forEach(([key, val]) => {
-      if (val === 0 || val === "any") return;
+      if (val === 0) return;
       params[key] = val;
     });
 
