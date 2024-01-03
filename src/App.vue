@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "@/stores/main";
+import { gsap } from "gsap";
 import Header from "@/components/Header.vue";
 import Alert from "@/components/Alert.vue";
 import AlertTransition from "@/components/AlertTransition.vue";
@@ -28,8 +29,35 @@ const currentView = computed(() => {
   return !isQuizActive.value ? VIEWS["MAIN_MENU"] : VIEWS["QUIZ"];
 });
 
-const hasError = computed(() => store.fetchError ? true : false);
-const errorStr = computed(() => `${store.fetchError.code} - ${store.fetchError.name}: ${store.fetchError.message}`);
+const hasError = computed(() => (store.fetchError ? true : false));
+const errorStr = computed(
+  () =>
+    `${store.fetchError.code} - ${store.fetchError.name}: ${store.fetchError.message}`,
+);
+
+function onBeforeEnter(el) {
+  gsap.set(el, {
+    opacity: 0,
+  });
+}
+
+function onEnter(el, done) {
+  gsap.to(el, {
+    opacity: 1,
+    duration: 0.25,
+    ease: "expo.in",
+    onComplete: done,
+  });
+}
+
+function onLeave(el, done) {
+  gsap.to(el, {
+    opacity: 0,
+    duration: 0.25,
+    ease: "expo.out",
+    onComplete: done,
+  });
+}
 </script>
 
 <template>
@@ -43,8 +71,17 @@ const errorStr = computed(() => `${store.fetchError.code} - ${store.fetchError.n
   </AlertTransition>
   <Header />
   <main
-    class="mx-auto mb-8 mt-1 box-border flex h-full w-11/12 max-w-3xl overflow-hidden rounded-md bg-neutral-100/75 shadow-md backdrop-blur-sm hover:shadow-lg dark:bg-neutral-950/75"
+    class="mx-auto mb-8 mt-1 box-border w-11/12 max-w-3xl overflow-hidden rounded-md bg-neutral-100/75 shadow-md backdrop-blur-sm hover:shadow-lg dark:bg-neutral-950/75"
   >
-    <component :is="currentView"></component>
+    <Transition
+      @before-enter="onBeforeEnter"
+      @enter="onEnter"
+      @leave="onLeave"
+      :css="false"
+      mode="out-in"
+      appear
+    >
+      <component :is="currentView"></component>
+    </Transition>
   </main>
 </template>
