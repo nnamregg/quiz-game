@@ -7,77 +7,69 @@ import TimedOut from "@/components/Results/TimedOut.vue";
 import FinalScore from "@/components/Results/FinalScore.vue";
 
 const store = useStore();
-/* 
-const props = defineProps({
-  isTimedOut: {
-    type: Boolean,
-    required: true,
-  },
-}); */
 
 const VIEWS = {
-  "TIMED_OUT": TimedOut,
-  "FINAL_SCORE": FinalScore
-}
+  TIMED_OUT: TimedOut,
+  FINAL_SCORE: FinalScore,
+};
 
-const currentView = computed(() => isTimedOut.value ? VIEWS["TIMED_OUT"] : VIEWS["FINAL_SCORE"] );
-const isTimedOut = computed(() => store.index === null );
+const currentView = computed(() =>
+  isTimedOut.value ? VIEWS["TIMED_OUT"] : VIEWS["FINAL_SCORE"],
+);
+const isTimedOut = computed(() => store.index === null);
 
-const buttonsContainer = ref(null);
-const viewContainer = ref(null);
+const btnsContainerRef = ref(null);
+const viewContainerRef = ref(null);
+const animateOut = ref(false);
 
 const resetQuiz = () => {
-  tl.play("animateOut");
+  triggerAnimateOut();
   setTimeout(() => {
     store.restartQuiz();
   }, 800);
 };
 
 const newQuiz = () => {
-  tl.play("animateOut");
+  triggerAnimateOut();
   setTimeout(() => {
     store.clearQuiz();
   }, 800);
 };
 
-const tl = gsap.timeline({ paused: true });
+const tl = gsap.timeline({ ease: "expo1.out", duration: 0.5 });
 
 function buildTimeline() {
   tl.fromTo(
-    buttonsContainer.value,
-    { opacity: 0, y: 250 },
-    { opacity: 1, y: 0, delay: 0.5, duration: 0.5, ease: "linear" },
-    "animateIn",
-  )
-    .addPause()
-    .to(
-      buttonsContainer.value,
-      { opacity: 0, y: 250, delay: 0.2, duration: 0.5, ease: "linear" },
-      "animateOut"
-    )
-    .to(
-      viewContainer.value,
-      { opacity: 0, scale: 0.1, duration: 0.5, ease: "back.in(2)" },
-      "animateOut",
-    );
+    btnsContainerRef.value,
+    { opacity: 0, translateY: 250 },
+    { opacity: 1, translateY: 0 },
+  );
+}
+
+function triggerAnimateOut() {
+  animateOut.value = true;
+  tl.reverse();
 }
 
 const setTitle = (title) => {
   document.title = title;
-}
+};
 
 onMounted(() => {
   buildTimeline();
-  tl.play("animateIn");
 });
 </script>
 
 <template>
   <div class="flex h-full w-full flex-col pt-16">
-    <div ref="viewContainer" class="relative my-12">
-      <component :is="currentView" @set-title="setTitle"></component>
+    <div ref="viewContainerRef" class="relative my-12">
+      <component
+        :is="currentView"
+        :animate-out="animateOut"
+        @set-title="setTitle"
+      ></component>
     </div>
-    <div ref="buttonsContainer" class="grid w-full grid-cols-1 md:grid-cols-2">
+    <div ref="btnsContainerRef" class="grid w-full grid-cols-1 md:grid-cols-2">
       <Button @action="resetQuiz">
         <span class="mdi mdi-restart mdi-18px mr-2 mt-1"></span>Restart
       </Button>
