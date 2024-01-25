@@ -1,32 +1,34 @@
 <script setup>
-import { ref, computed, onBeforeMount, onMounted, watch } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { twMerge as twm } from "tailwind-merge";
-import gsap from "gsap";
+import ThemeSelectorTransition from "./ThemeSelectorTransition.vue";
 
-const bodyElement = ref(document.documentElement);
+const bodyRef = ref(document.documentElement);
+const btnsRef = ref([]);
 const currentThemeSelection = ref(null);
 const showOptions = ref(false);
-const optionsContainer = ref(null);
-const btns = ref([]);
 
 const remainingThemes = computed(() => {
-  return Object.keys(themes).filter(
+  return Object.keys(THEMES).filter(
     (key) => key !== currentThemeSelection.value,
   );
 });
 
-const themes = {
+const THEMES = {
   dark: {
     ico: "mdi-weather-night",
     name: "Dark",
+    set: () => setDarkMode(),
   },
   light: {
     ico: "mdi-weather-sunny",
     name: "Light",
+    set: () => setLightMode(),
   },
   system: {
     ico: "mdi-monitor-eye",
     name: "System",
+    set: () => setSystemPrefMode(),
   },
 };
 
@@ -42,137 +44,58 @@ const setTheme = (theme) => {
   if (theme === currentThemeSelection.value) return;
 
   currentThemeSelection.value = theme;
-
-  switch (theme) {
-    case "light":
-      setLightMode();
-      break;
-    case "dark":
-      setDarkMode();
-      break;
-    default:
-      setSystemPrefMode();
-      break;
-  }
+  THEMES[theme].set();
 
   if (showOptions.value) toggleOptions();
 };
 
-const toggleOptions = () => {
-  if(!showOptions.value) {
-    showOptions.value = true;
-  } else {
-    tl.play("animateOut");
-    setTimeout(() => {
-      showOptions.value = false;
-    }, 400);
-  }
-};
+const toggleOptions = () => (showOptions.value = !showOptions.value);
 
 const setDarkMode = () => {
-  bodyElement.value.classList.add("dark");
+  bodyRef.value.classList.add("dark");
   localStorage.theme = "dark";
 };
 
 const setLightMode = () => {
-  bodyElement.value.classList.remove("dark");
+  bodyRef.value.classList.remove("dark");
   localStorage.theme = "light";
 };
 
 const setSystemPrefMode = () => {
   window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? bodyElement.value.classList.add("dark")
-    : bodyElement.value.classList.remove("dark");
+    ? bodyRef.value.classList.add("dark")
+    : bodyRef.value.classList.remove("dark");
 
   localStorage.removeItem("theme");
-};
-
-// Animaciones
-const tl = gsap.timeline({ paused: true });
-
-function buildTimeline() {
-  tl.fromTo(
-    optionsContainer.value,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.5, ease: "sine.in" },
-    "animateIn",
-  ).fromTo(
-    optionsContainer.value,
-    { y: -15 },
-    { y: 0, duration: 0.25, ease: "sine.in" },
-    "animateIn",
-  ).fromTo(
-    btns.value.at(0),
-    { x: 50, opacity: 0.1 },
-    { x: 0, opacity: 1, delay: 0.1, duration: 0.4, ease: "sine.in" },
-    "animateIn",
-  ).fromTo(
-    btns.value.at(1),
-    { x: -50, opacity: 0.1 },
-    { x: 0, opacity: 1, delay: 0.1, duration: 0.4, ease: "sine.in" },
-    "animateIn",
-  );
-  tl.addPause();
-  tl.fromTo(
-    optionsContainer.value,
-    { opacity: 1 },
-    { opacity: 0, delay: 0.2, duration: 0.2, ease: "ease.out" },
-    "animateOut",
-  ).fromTo(
-    optionsContainer.value,
-    { y: 0 },
-    { y: -15, delay: 0.25, duration: 0.15, ease: "sine.out" },
-    "animateOut",
-  ).fromTo(
-    btns.value.at(0),
-    { x: 0 },
-    { x: 50, duration: 0.2, ease: "sine.out" },
-    "animateOut",
-  ).fromTo(
-    btns.value.at(1),
-    { x: 0 },
-    { x: -50, duration: 0.2, ease: "sine.out" },
-    "animateOut",
-  );
 };
 
 onBeforeMount(() => {
   setThemeFromLocalStorage();
 });
-
-onMounted(() => {
-  buildTimeline();
-})
-
-watch(showOptions, (newVal) => {
-  if(newVal) tl.play("animateIn");
-})
 </script>
 
 <template>
-  <div class="mx-auto h-auto w-fit">
+  <div class="mx-auto h-24 w-fit">
     <button :class="twm(BTN_CLASSES, 'z-50 mt-6')" @click="toggleOptions">
       <span
-        :class="twm(BTN_ICO_CLASSES, themes[currentThemeSelection].ico)"
+        :class="twm(BTN_ICO_CLASSES, THEMES[currentThemeSelection].ico)"
       ></span>
-      {{ themes[currentThemeSelection].name }}
+      {{ THEMES[currentThemeSelection].name }}
     </button>
 
-    <div
-      v-show="showOptions"
-      ref="optionsContainer"
-      class="z-0 mx-auto flex max-w-fit gap-4 py-3 opacity-0"
-    >
-      <button
-        v-for="(theme, i) in remainingThemes"
-        :id="`theme-select-btn-${i}`"
-        :class="BTN_CLASSES"
-        ref="btns"
-        @click="setTheme(theme)"
-      >
-        <span :class="twm(BTN_ICO_CLASSES, themes[theme].ico)"></span>
-        {{ themes[theme].name }}
-      </button>
-    </div>
+    <ThemeSelectorTransition :btns="btnsRef">
+      <div v-show="showOptions" class="z-0 mx-auto flex max-w-fit gap-4 py-3">
+        <button
+          v-for="(theme, i) in remainingThemes"
+          :id="`theme-select-btn-${i}`"
+          :class="BTN_CLASSES"
+          ref="btnsRef"
+          @click="setTheme(theme)"
+        >
+          <span :class="twm(BTN_ICO_CLASSES, THEMES[theme].ico)"></span>
+          {{ THEMES[theme].name }}
+        </button>
+      </div>
+    </ThemeSelectorTransition>
   </div>
 </template>

@@ -1,26 +1,18 @@
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useStore } from "@/stores/main";
 import { gsap } from "gsap";
 
 const store = useStore();
 
 const props = defineProps({
-  ico: {
-    type: String,
-    required: true
+  animateOut: {
+    type: Boolean,
+    default: false,
   },
-  txt: {
-    type: String,
-    required: true
-  },
-  score: {
-    type: Array,
-    required: true
-  },
-})
+});
 
-const emit = defineEmits(["setTitle"])
+const emit = defineEmits(["setTitle"]);
 
 const SCORES = {
   terrible: {
@@ -71,57 +63,61 @@ function getFinalScore(avg) {
   }
 }
 
-const scoreContainer = ref(null);
-const scoreIcon = ref(null);
-const scoreText = ref(null);
+const badgeRef = ref(null);
+const iconRef = ref(null);
+const textRef = ref(null);
 
-const tl = gsap.timeline({ paused: true });
+const tl = gsap.timeline({ ease: "power1.Out" });
 
 function buildTimeline() {
   tl.fromTo(
-    scoreContainer.value,
-    { opacity: 0, y: -250 },
+    badgeRef.value,
+    { opacity: 0, translateY: -250 },
     {
       opacity: 1,
-      y: 0,
-      duration: 0.2,
-      ease: "power1.inOut"
+      translateY: 0,
+      duration: 0.3,
     },
     "animateIn",
-  ).fromTo(
-    scoreIcon.value,
-    { opacity: 0, rotate: 1080, scale: 0.1 },
-    {
-      opacity: 1,
-      rotate: 0,
-      scale: 1,
-      delay: 0.2,
-      duration: 0.8,
-      ease: "power1.inOut",
-    },
-    "animateIn",
-  ).fromTo(
-    scoreText.value,
-    { opacity: 0, "clip-path": "polygon(0 0, 10% 0, 6% 100%, 0% 100%)" },
-    {
-      opacity: 1,
-      "clip-path": "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-      duration: 0.5,
-    },
   )
+    .fromTo(
+      iconRef.value,
+      { opacity: 0, scale: 0.1 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.6,
+      },
+      "animateIn",
+    )
+    .fromTo(
+      textRef.value,
+      { opacity: 0, "clip-path": "polygon(0 0, 10% 0, 6% 100%, 0% 100%)" },
+      {
+        opacity: 1,
+        "clip-path": "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        duration: 0.8,
+      },
+      "animateIn",
+    );
 }
 
 onMounted(() => {
   emit("setTitle", finalScore.value.text);
   buildTimeline();
-  tl.play("animateIn");
 });
 
+watch(
+  () => props.animateOut,
+  (newVal) => {
+    if (newVal) tl.reverse();
+  },
+);
 </script>
 
 <template>
   <div
-    ref="scoreContainer"
+    ref="badgeRef"
     class="anim-top mx-auto w-fit items-center justify-between rounded border-2 border-pink-200 bg-pink-200/50 pb-1.5 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-teal-300/75"
   >
     <span
@@ -134,7 +130,13 @@ onMounted(() => {
   </div>
 
   <div class="mx-auto my-14 max-w-md">
-    <span ref="scoreIcon" class="mdi text-8xl block" :class="finalScore.ico"></span>
-    <p ref="scoreText" class="mt-1 text-4xl lg:text-5xl">{{ finalScore.text }}</p>
+    <span
+      ref="iconRef"
+      class="mdi block text-8xl"
+      :class="finalScore.ico"
+    ></span>
+    <p ref="textRef" class="mt-1 text-4xl lg:text-5xl">
+      {{ finalScore.text }}
+    </p>
   </div>
 </template>
