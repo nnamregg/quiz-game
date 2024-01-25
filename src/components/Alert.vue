@@ -18,7 +18,7 @@ const emit = defineEmits(["onClose"]);
 <template>
   <div
     id="alert"
-    class="fixed bottom-2 left-1/2 z-50 mb-4 flex w-11/12 max-w-3xl -translate-x-1/2 items-center rounded-md border-t-4 border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-neutral-950/75 dark:text-red-400"
+    class="fixed bottom-2 left-1/2 z-50 mb-4 flex w-11/12 max-w-3xl -translate-x-1/2 items-center rounded-md border-t-4 border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-neutral-950/95 dark:text-red-400"
     role="alert"
   >
     <span :class="twm('mdi flex-shrink-0', props.ico)" aria-hidden="true">

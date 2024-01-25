@@ -10,7 +10,7 @@ function onBeforeEnter(el) {
 
 function onEnter(el, done) {
   gsap.to(el, {
-    duration: 0.5,
+    duration: 0.3,
     opacity: 1,
     translateY: 0,
     ease: "circ.out",
@@ -20,7 +20,8 @@ function onEnter(el, done) {
 
 function onLeave(el, done) {
   gsap.to(el, {
-    duration: 0.5,
+    delay: 0.2,
+    duration: 0.3,
     opacity: 0,
     translateY: 250,
     ease: "circ.in",

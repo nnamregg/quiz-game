@@ -1,21 +1,19 @@
 <script setup>
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useStore } from "@/stores/main";
 import { gsap } from "gsap";
 import Header from "@/components/Header.vue";
-import Alert from "@/components/Alert.vue";
 import AlertTransition from "@/components/AlertTransition.vue";
-import MainMenu from "@/views/MainMenuView.vue";
-import Quiz from "@/views/QuizView.vue";
-import Results from "@/views/ResultsView.vue";
 
 const store = useStore();
 
 const VIEWS = {
-  MAIN_MENU: MainMenu,
-  QUIZ: Quiz,
-  RESULTS: Results,
+  MAIN_MENU: defineAsyncComponent(() => import("@/views/MainMenuView.vue")),
+  QUIZ: defineAsyncComponent(() => import("@/views/QuizView.vue")),
+  RESULTS: defineAsyncComponent(() => import("@/views/ResultsView.vue")),
 };
+
+const Alert = defineAsyncComponent(() => import("@/components/Alert.vue"));
 
 const isQuizActive = computed(() => (store.quizLength ? true : false));
 const isQuizFinished = computed(

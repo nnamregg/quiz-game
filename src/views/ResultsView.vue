@@ -1,16 +1,18 @@
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, defineAsyncComponent } from "vue";
 import { useStore } from "@/stores/main";
 import gsap from "gsap";
 import Button from "@/components/Button.vue";
-import TimedOut from "@/components/Results/TimedOut.vue";
-import FinalScore from "@/components/Results/FinalScore.vue";
 
 const store = useStore();
 
 const VIEWS = {
-  TIMED_OUT: TimedOut,
-  FINAL_SCORE: FinalScore,
+  TIMED_OUT: defineAsyncComponent(
+    () => import("@/components/Results/TimedOut.vue"),
+  ),
+  FINAL_SCORE: defineAsyncComponent(
+    () => import("@/components/Results/FinalScore.vue"),
+  ),
 };
 
 const currentView = computed(() =>
