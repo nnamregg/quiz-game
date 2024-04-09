@@ -25,7 +25,7 @@ function handleAnswer(correct) {
 </script>
 
 <template>
-  <div class="mt-auto grid w-full grid-cols-1 md:grid-cols-2">
+  <div class="grid w-full grid-cols-1 md:grid-cols-2">
     <ChoiceButton
       v-for="(choice, index) in props.choices"
       :key="index"

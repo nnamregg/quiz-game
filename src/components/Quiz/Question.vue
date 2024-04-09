@@ -32,7 +32,7 @@ function setDifficultyIcon(difficulty) {
 </script>
 
 <template>
-  <div class="h-auto w-full px-6 pb-4">
+  <div class="mb-auto h-auto w-full px-6">
     <div class="mx-auto mt-8 flex w-full justify-between lg:w-[95%]">
       <div>
         <span class="mdi mr-2" :class="difficultyIcon"></span>
@@ -47,7 +47,7 @@ function setDifficultyIcon(difficulty) {
       />
     </div>
 
-    <p class="my-10 h-56 overflow-y-auto text-left text-3xl lg:text-4xl">
+    <p class="my-10 min-h-40 overflow-y-auto text-left text-3xl lg:text-4xl">
       {{ props.question.question }}
     </p>
   </div>

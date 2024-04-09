@@ -1,7 +1,9 @@
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted, watchEffect } from "vue";
 import { twMerge as twm } from "tailwind-merge";
 import ThemeSelectorTransition from "./ThemeSelectorTransition.vue";
+
+const emit = defineEmits(["changedTheme"]);
 
 const bodyRef = ref(document.documentElement);
 const btnsRef = ref([]);
@@ -13,6 +15,8 @@ const remainingThemes = computed(() => {
     (key) => key !== currentThemeSelection.value,
   );
 });
+
+const windowWidth = ref(window.innerWidth);
 
 const THEMES = {
   dark: {
@@ -33,8 +37,8 @@ const THEMES = {
 };
 
 const BTN_CLASSES =
-  "mx-auto flex w-24 items-center justify-center rounded-full border-2 border-neutral-400/50 bg-neutral-100 p-2 text-xs font-semibold text-neutral-400 hover:bg-neutral-50 active:border-pink-400 active:text-pink-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-700 dark:hover:bg-neutral-800/75 dark:active:border-teal-500 dark:active:text-teal-500";
-const BTN_ICO_CLASSES = "mdi text-base mdi-flip-h relative mr-2";
+  "mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-neutral-300 bg-neutral-100 p-2 text-xs font-semibold text-neutral-400 hover:bg-neutral-50 active:border-pink-400 active:text-pink-400 md:w-24 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-700 dark:hover:bg-neutral-800 dark:active:border-teal-500 dark:active:text-teal-500";
+const BTN_ICO_CLASSES = "mdi mdi-flip-h relative text-sm md:mr-2";
 
 const setThemeFromLocalStorage = () => {
   localStorage.theme ? setTheme(localStorage.theme) : setTheme("system");
@@ -72,30 +76,45 @@ const setSystemPrefMode = () => {
 onBeforeMount(() => {
   setThemeFromLocalStorage();
 });
+
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    windowWidth.value = window.innerWidth;
+  });
+});
+
+watchEffect(async () => {
+  emit("changedTheme", currentThemeSelection.value);
+});
 </script>
 
 <template>
-  <div class="mx-auto h-24 w-fit">
-    <button :class="twm(BTN_CLASSES, 'z-50 mt-6')" @click="toggleOptions">
+  <div class="flex h-24 w-fit flex-row-reverse items-center gap-3 px-4">
+    <button :class="twm(BTN_CLASSES, 'z-50')" @click="toggleOptions">
       <span
         :class="twm(BTN_ICO_CLASSES, THEMES[currentThemeSelection].ico)"
       ></span>
-      {{ THEMES[currentThemeSelection].name }}
+      <span v-show="windowWidth >= 640">{{
+        THEMES[currentThemeSelection].name
+      }}</span>
     </button>
-
-    <ThemeSelectorTransition :btns="btnsRef">
-      <div v-show="showOptions" class="z-0 mx-auto flex max-w-fit gap-4 py-3">
+    <ThemeSelectorTransition>
+      <template
+        v-if="showOptions"
+        class="z-0 mx-auto flex max-w-fit gap-4 py-3"
+      >
         <button
           v-for="(theme, i) in remainingThemes"
           :id="`theme-select-btn-${i}`"
+          :key="`theme-select-btn-${i}`"
           :class="BTN_CLASSES"
           ref="btnsRef"
           @click="setTheme(theme)"
         >
           <span :class="twm(BTN_ICO_CLASSES, THEMES[theme].ico)"></span>
-          {{ THEMES[theme].name }}
+          <span v-if="windowWidth >= 640">{{ THEMES[theme].name }}</span>
         </button>
-      </div>
+      </template>
     </ThemeSelectorTransition>
   </div>
 </template>

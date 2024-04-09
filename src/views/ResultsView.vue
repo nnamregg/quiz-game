@@ -63,15 +63,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col pt-16">
-    <div ref="viewContainerRef" class="relative my-12">
+  <div class="flex h-auto w-full flex-col">
+    <div ref="viewContainerRef" class="my-12">
       <component
         :is="currentView"
         :animate-out="animateOut"
         @set-title="setTitle"
       ></component>
     </div>
-    <div ref="btnsContainerRef" class="grid w-full grid-cols-1 md:grid-cols-2">
+    <div
+      ref="btnsContainerRef"
+      class="mt-auto grid w-full grid-cols-1 md:grid-cols-2"
+    >
       <Button @action="resetQuiz">
         <span class="mdi mdi-restart mdi-18px mr-2 mt-1"></span>Restart
       </Button>

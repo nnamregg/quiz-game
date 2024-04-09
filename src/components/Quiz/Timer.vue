@@ -69,7 +69,7 @@ watch(isTimedOut, (newVal) => {
 
 watch(
   () => props.activate,
-  (activate) => activate ? startTimer() : stopTimer(),
+  (activate) => (activate ? startTimer() : stopTimer()),
   { immediate: true },
 );
 </script>
