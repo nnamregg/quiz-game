@@ -6,9 +6,9 @@ export const useStore = defineStore("main", () => {
   // State
   const categories = ref([]);
   const quizOptions = reactive({
-    amount: 10,
-    category: 0,
-    difficulty: 0,
+    amount: "10",
+    category: "0",
+    difficulty: "0",
     type: "multiple",
   });
   const questions = ref([]);
@@ -21,16 +21,8 @@ export const useStore = defineStore("main", () => {
   const currentQuestion = computed(() => questions.value[index.value]);
 
   // Actions
-  function setQuizAmount(amount) {
-    quizOptions.amount = amount;
-  }
-
-  function setQuizCategory(category) {
-    quizOptions.category = category;
-  }
-
-  function setQuizDifficulty(difficulty) {
-    quizOptions.difficulty = difficulty;
+  function setOption(opt, val) {
+    quizOptions[opt] = val;
   }
 
   function scorePoint() {
@@ -83,7 +75,7 @@ export const useStore = defineStore("main", () => {
     const params = {};
 
     Object.entries(quizOptions).forEach(([key, val]) => {
-      if (val === 0) return;
+      if (val === "0") return;
       params[key] = val;
     });
 
@@ -106,9 +98,7 @@ export const useStore = defineStore("main", () => {
     quizLength,
     currentQuestion,
     clearFetchError,
-    setQuizAmount,
-    setQuizCategory,
-    setQuizDifficulty,
+    setOption,
     scorePoint,
     nextQuestion,
     restartQuiz,

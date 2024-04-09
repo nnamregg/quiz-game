@@ -67,19 +67,22 @@ function onLeave(el, done) {
       @on-close="store.clearFetchError"
     />
   </AlertTransition>
+
   <Header />
-  <main
-    class="mx-auto mb-8 mt-1 box-border w-11/12 max-w-3xl overflow-hidden rounded-md bg-neutral-100/75 shadow-md backdrop-blur-sm hover:shadow-lg dark:bg-neutral-950/75"
-  >
-    <Transition
-      @before-enter="onBeforeEnter"
-      @enter="onEnter"
-      @leave="onLeave"
-      :css="false"
-      mode="out-in"
-      appear
+  <main class="h-full flex-grow px-4 py-4 md:px-8 md:py-8 2xl:pb-20">
+    <div
+      class="mx-auto box-border flex min-h-[600px] w-full overflow-hidden rounded-md border-2 border-neutral-300 bg-pink-50 md:max-w-3xl dark:border-neutral-900 dark:bg-neutral-950"
     >
-      <component :is="currentView"></component>
-    </Transition>
+      <Transition
+        @before-enter="onBeforeEnter"
+        @enter="onEnter"
+        @leave="onLeave"
+        :css="false"
+        mode="out-in"
+        appear
+      >
+        <component :is="currentView"></component>
+      </Transition>
+    </div>
   </main>
 </template>

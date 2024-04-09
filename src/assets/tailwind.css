@@ -7,14 +7,14 @@
     @apply font-sans;
   }
   body {
-    @apply bg-neutral-200 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 text-center bg-[url('bg-pattern-light.svg')] dark:bg-[url('bg-pattern-dark.svg')];
+    @apply bg-neutral-100 bg-[url('bg-pattern-light.svg')] text-center text-neutral-800 dark:bg-neutral-950 dark:bg-[url('bg-pattern-dark.svg')] dark:text-neutral-200;
   }
   #app {
-    @apply min-h-screen;
+    @apply flex min-h-screen flex-col;
   }
 }
 
 @layer utilities {
   @import url("@mdi/font/css/materialdesignicons.css");
-  @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,200;0,400;0,600;0,800;1,200;1,400;1,600;1,800&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,200;0,400;0,600;0,800;1,200;1,400;1,600;1,800&display=swap");
 }
