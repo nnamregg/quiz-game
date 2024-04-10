@@ -2,8 +2,8 @@
 import { ref } from "vue";
 import ThemeSelector from "@/components/ThemeSelector.vue";
 
-const LOGO_LIGHT = "/triviatrek-logo-light.png";
-const LOGO_DARK = "/triviatrek-logo-dark.png";
+const LOGO_LIGHT = "triviatrek-logo-light.png";
+const LOGO_DARK = "triviatrek-logo-dark.png";
 
 const imgSrc = ref(null);
 
